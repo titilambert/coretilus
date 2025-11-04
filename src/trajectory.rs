@@ -159,11 +159,7 @@ impl Trajectory {
         // handle ends of path
         if self.direction() == Direction::Linear {
             let start_tick = self.started_tick_id.unwrap(); // safe ici, jamais None
-            if tick_id - start_tick >= self.path.len() {
-                self.is_done = true
-            } else {
-                self.is_done = false
-            }
+            self.is_done = tick_id - start_tick >= self.path.len();
         }
     }
 

@@ -72,7 +72,7 @@ jobs:
               exit 1
               ;;
           esac
-      
+
           echo "Created artifact: artifacts/$ARCHIVE_NAME"
 
       - name: Upload artifact
