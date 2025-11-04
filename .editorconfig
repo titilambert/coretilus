@@ -1,0 +1,4 @@
+root = true
+
+[**/*.adoc]
+trim_trailing_whitespace = false
