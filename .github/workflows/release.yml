@@ -1,0 +1,102 @@
+name: Release Binaries
+
+on:
+  push:
+    tags:
+      - "v*" # Trigger only when a tag starting with "v" is pushed, e.g. v1.2.3
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            ext: ""
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            ext: ".exe"
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            ext: ""
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Prepare artifact (all OS)
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          BIN_DIR="target/${{ matrix.target }}/release"
+
+          # récupère tous les binaires exécutables dans BIN_DIR
+          BIN_LIST=$(find "$BIN_DIR" -maxdepth 1 -type f -perm -111 | xargs -n1 basename)
+          echo "Found binaries: $BIN_LIST"
+          # nom de l'archive avec le tag
+          case "${{ matrix.os }}" in
+            windows-latest)
+              ARCHIVE_NAME="coretilus-${{ github.ref_name }}-windows_x86_64.zip"
+              # construit un tableau PowerShell avec tous les fichiers (format correct)
+              BIN_ARRAY=""
+              for bin in $BIN_LIST; do
+                BIN_ARRAY+="'$BIN_DIR/$bin',"
+              done
+              # retire la dernière virgule
+              BIN_ARRAY=${BIN_ARRAY%,}
+              pwsh -Command "Compress-Archive -Path @($BIN_ARRAY) -DestinationPath 'artifacts/$ARCHIVE_NAME' -Force"
+              ;;
+            ubuntu-latest)
+              ARCHIVE_NAME="coretilus-${{ github.ref_name }}-linux_x86_64.tar.gz"
+              tar -czf "artifacts/$ARCHIVE_NAME" -C "$BIN_DIR" $BIN_LIST
+              ;;
+            macos-latest)
+              ARCHIVE_NAME="coretilus-${{ github.ref_name }}-macos_arm64.tar.gz"
+              tar -czf "artifacts/$ARCHIVE_NAME" -C "$BIN_DIR" $BIN_LIST
+              ;;
+            *)
+              echo "Unsupported OS: ${{ matrix.os }}"
+              exit 1
+              ;;
+          esac
+      
+          echo "Created artifact: artifacts/$ARCHIVE_NAME"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: artifacts/
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

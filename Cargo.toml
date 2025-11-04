@@ -37,11 +37,14 @@ path = "src/coretilus.rs"
 name = "gti"
 
 [[bin]]
-name = "mr"
-
-[[bin]]
 name = "sl"
-#
+
+#[[bin]]
+#name = "mr"
+
+#[[bin]]
+#name = "pc"
+
 #[[bin]]
 #name = "vm"
 #

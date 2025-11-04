@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install cargo-llvm-cov
+        run: cargo install cargo-llvm-cov --version 0.6.21
+      - name: Test Build
+        env:
+          RUSTFLAGS: "-C target-feature=+crt-static"
+        run: cargo install cargo-llvm-cov && cargo build
+      - name: Run tests with coverage
+        run: cargo llvm-cov --doctests --verbose --lcov --output-path lcov.info
+      # TODO codecov
