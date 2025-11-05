@@ -7,61 +7,100 @@ Each binary is intentionally useless, funny, or just delightfully absurd.
 
 ---
 
-### 🔁 What does “tilus” mean?
+## 🔁 What does “tilus” mean?
 
-> **t.i.l.u.s. = tilus Is Ludicrously Useless Stuff**
+> **t.i.l.u.s. = Tilus Is Ludicrously Useless Stuff**
 
-A recursive acronym (because of course it is).
-It reflects the project’s spirit — *ridiculously, gloriously pointless utilities.*
+* A recursive acronym (because of course it is).
+* It reflects the project’s spirit — *ridiculously, gloriously pointless utilities.*
+* It's also `utils` with a typo.
 
-### 🧩 Included commands
+## 🧩 Included commands
 
 | Command  | Inspired by  | Status       | Description |
 |----------|--------------|--------------|-------------|
-| `gti`    | `git`        | ✅ - DONE    | “Start your engine!” before committing. |
-| `sl`     | `ls`         | ✅ - DONE    | The legendary Steam Locomotive. |
+| `sl`     | `ls`         | ✅ - DONE    | The legendary Steam Locomotive.<br>Rust port of https://github.com/mtoyoda/sl |
+| `gti`    | `git`        | ✅ - DONE    | “Start your engine!” before committing.<br>Rust port of https://github.com/rwos/gti |
 | `mr`     | `rm`         | 🕓 - PLANNED | Land the rocket without crashing it. |
 | `pc`     | `cp`         | 🕓 - PLANNED | Copy file from Floppy to IDE using a 486 CPU. |
 | `grpe`   | `grep`       | 🕓 - PLANNED | Searches nothing and finds everything. |
 | ...adn   | more         | 🕓 - PLANNED | Coming soon, one typo at a time. |
 | ...yuor  | own ideas    | 🕓 - PLANNED | Open an issue or a PR. |
 
-
-
 ---
 
-### 🦀 Why Rust?
-
-Because rewriting useless things in Rust is the most useful way to learn it.
-Each mini-utility is a chance to explore a different Rust concept — CLI parsing, ANSI art, async, etc.
-
-### TODOs
+## ☑️ TODOs
 
 * [ ] Add links/credits to original ascii authors
 * [ ] Add/Generate man pages
 * [ ] Create topydex command
 * [ ] Complete tests and increate test coverage
-* [ ] Add cargo install support
 * [ ] Add brew support
 
 ---
 
+## 💻 Install and usage
 
-### ⚙️ Build
+There are multiple way to install coretilus
 
-```bash
-# sudo apt-get install -y mingw-w64
+### GitHub release artifacts
 
-RUSTFLAGS="-C target-feature=+crt-static" cargo build --release
+Go to https://github.com/titilambert/coretilus/releases and download the archive depending on your environment, then extract it like
+```
+tar xvf coretilus-v0.0.2-linux_x86_64.tar.gz
+sl
+gti
+```
+Then move the binaries to folder included in you $PATH, ie /usr/local/bin
+```
+sudo cp -v sl gti /usr/local/bin/
 ```
 
-### 🧪 Run tests
+### Using deb package
+Go to https://github.com/titilambert/coretilus/releases and download the package depending on your environment, then install it:
+```
+sudo dpkg -i coretilus_0.0.2-1_amd64.deb
+```
+
+### Using rpm package
+Go to https://github.com/titilambert/coretilus/releases and download the package depending on your environment, then install it:
+```
+sudo dnf install coretilus_0.0.2-1_amd64.deb
+```
+
+
+
+### Using cargo
+```
+cargo install coretilus
+```
+Ensure `$HOME/.cargo/bin` is in your `$PATH`, then you can ~~use the binaries~~ do some typos
+```
+gti
+sl
+...
+```
+
+### MacOs with brew
+
+```
+brew tap titilambert/tap
+brew install coretilus
+```
+
+## ⚙️ Build
+
+```bash
+RUSTFLAGS="-C target-feature=+crt-static" cargo build
+```
+
+## 🧪 Run tests
 
 ```bash
 cargo llvm-cov --doctests --open
 ```
 
-### 📘 Generate docs
+## 📘 Generate docs
 
 ```bash
 cargo doc --no-deps --open
