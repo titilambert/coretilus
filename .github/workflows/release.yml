@@ -9,20 +9,54 @@ permissions:
   contents: write
 
 jobs:
+  checks:
+    name: Pre-release checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Verify tag matches Cargo.toml version
+        shell: bash
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          CARGO_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+
+          echo "Tag version: $TAG_VERSION"
+          echo "Cargo.toml version: $CARGO_VERSION"
+
+          if [ "$TAG_VERSION" != "$CARGO_VERSION" ]; then
+            echo "❌ Version mismatch: tag ($TAG_VERSION) != Cargo.toml ($CARGO_VERSION)"
+            exit 1
+          fi
+
+          echo "✅ Tag and Cargo.toml version match."
+
   build:
-    name: Build for ${{ matrix.os }}
+    name: Build for ${{ matrix.os }}/${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
+    needs: checks
     strategy:
       matrix:
         include:
           - os: ubuntu-latest
+            arch: x86_64
             target: x86_64-unknown-linux-gnu
             ext: ""
           - os: windows-latest
+            arch: x86_64
             target: x86_64-pc-windows-msvc
             ext: ".exe"
           - os: macos-latest
+            arch: aarch64
             target: aarch64-apple-darwin
+            ext: ""
+          - os: ubuntu-latest
+            arch: aarch64
+            target: aarch64-unknown-linux-gnu
             ext: ""
 
     steps:
@@ -33,6 +67,20 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+
+      - name: Install ARM toolchain and et up Cargo config for cross-compilation
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt update && sudo apt install -y gcc-aarch64-linux-gnu
+          mkdir -p .cargo
+          echo '[target.aarch64-unknown-linux-gnu]' > .cargo/config.toml
+          echo 'linker = "aarch64-linux-gnu-gcc"' >> .cargo/config.toml
+          rustup target add aarch64-unknown-linux-gnu
+
+      - name: Install Deps to build linux packages
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cargo install cargo-deb cargo-generate-rpm
 
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}
@@ -49,7 +97,7 @@ jobs:
           # nom de l'archive avec le tag
           case "${{ matrix.os }}" in
             windows-latest)
-              ARCHIVE_NAME="coretilus-${{ github.ref_name }}-windows_x86_64.zip"
+              ARCHIVE_NAME="coretilus-${{ github.ref_name }}-windows_${{ matrix.arch }}.zip"
               # construit un tableau PowerShell avec tous les fichiers (format correct)
               BIN_ARRAY=""
               for bin in $BIN_LIST; do
@@ -60,11 +108,15 @@ jobs:
               pwsh -Command "Compress-Archive -Path @($BIN_ARRAY) -DestinationPath 'artifacts/$ARCHIVE_NAME' -Force"
               ;;
             ubuntu-latest)
-              ARCHIVE_NAME="coretilus-${{ github.ref_name }}-linux_x86_64.tar.gz"
+              ARCHIVE_NAME="coretilus-${{ github.ref_name }}-linux_${{ matrix.arch }}.tar.gz"
               tar -czf "artifacts/$ARCHIVE_NAME" -C "$BIN_DIR" $BIN_LIST
+              cargo deb --target ${{ matrix.target }}
+              cp -v target/debian/*.deb artifacts/
+              cargo generate-rpm --target ${{ matrix.target }}
+              cp -v target/${{ matrix.target }}/generate-rpm/*.rpm artifacts/
               ;;
             macos-latest)
-              ARCHIVE_NAME="coretilus-${{ github.ref_name }}-macos_arm64.tar.gz"
+              ARCHIVE_NAME="coretilus-${{ github.ref_name }}-macos_${{ matrix.arch }}.tar.gz"
               tar -czf "artifacts/$ARCHIVE_NAME" -C "$BIN_DIR" $BIN_LIST
               ;;
             *)
@@ -100,3 +152,25 @@ jobs:
           files: artifacts/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-crates:
+    name: Publish to crates.io
+    runs-on: ubuntu-latest
+    needs: release
+    permissions:
+      id-token: write
+      contents: read
+    environment:
+      name: crates-io
+      url: https://crates.io/crates/coretilus
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: auth
+      - name: Publish to crates.io
+        uses: katyo/publish-crates@v2
+        with:
+          registry-token: ${{ steps.auth.outputs.token }}

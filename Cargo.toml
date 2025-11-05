@@ -1,11 +1,22 @@
 [package]
 name = "coretilus"
-version = "0.1.0"
-license = "Apache-2.0"
+version = "0.0.2"
 edition = "2024"
 authors = ["Thibault Cohen <dev@ttb.lt>"]
-repository = "https://gitlab.com/ttblt-oss/coretilus/coretilus"
+license = "Apache-2.0"
+description = "A parody of GNU Coreutils — a playful collection of typo-triggered command-line tools written in Rust"
+repository = "https://github.com/titilambert/coretilus"
+homepage = "https://github.com/titilambert/coretilus"
+documentation = "https://docs.rs/coretilus"
+readme = "README.md"
+keywords = ["cli", "terminal", "typo", "fun", "humor"]
+categories = ["command-line-interface", "games"]
 
+[package.metadata.generate-rpm]
+assets = [
+    { source = "target/release/sl", dest = "/usr/bin/sl", mode = "755" },
+    { source = "target/release/gti", dest = "/usr/bin/gti", mode = "755" },
+]
 
 [dependencies]
 terminal_size = "0.4.3"
@@ -14,20 +25,14 @@ rand = "0.9.2"
 
 [dependencies.uuid]
 version = "1.18.1"
-# Lets you generate random UUIDs
-features = [
-    "v4",
-]
+features = ["v4"]
 
 [profile.release]
-opt-level = 3          # optimisation maximale
-lto = true             # link-time optimization
-panic = "abort"        # plus petit et plus rapide
-strip = true           # enlève les symboles pour réduire la taille
-codegen-units = 1      # pour meilleures optimisations
-
-[dev-dependencies]
-cargo-llvm-cov = "0.6.21"
+opt-level = 3
+lto = true
+panic = "abort"
+strip = true
+codegen-units = 1
 
 [lib]
 name = "coretilus"
@@ -38,15 +43,3 @@ name = "gti"
 
 [[bin]]
 name = "sl"
-
-#[[bin]]
-#name = "mr"
-
-#[[bin]]
-#name = "pc"
-
-#[[bin]]
-#name = "vm"
-#
-#[[bin]]
-#name = "grpe"
