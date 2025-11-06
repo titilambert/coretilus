@@ -54,6 +54,10 @@ jobs:
             arch: aarch64
             target: aarch64-apple-darwin
             ext: ""
+          - os: macos-latest
+            arch: x86_64
+            target: x86_64-apple-darwin
+            ext: ""
           - os: ubuntu-latest
             arch: aarch64
             target: aarch64-unknown-linux-gnu
@@ -67,6 +71,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+
+      - name: Add target
+        run: rustup target add ${{ matrix.target }}
 
       - name: Install ARM toolchain and et up Cargo config for cross-compilation
         if: matrix.target == 'aarch64-unknown-linux-gnu'
