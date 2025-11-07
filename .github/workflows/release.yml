@@ -181,3 +181,127 @@ jobs:
         uses: katyo/publish-crates@v2
         with:
           registry-token: ${{ steps.auth.outputs.token }}
+
+  publish-homebrew:
+    name: Publish/Update Homebrew formula
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Extract version from branch/tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "Version: ${VERSION}, Tag: ${TAG}"
+
+      - name: Download and extract release assets
+        id: assets
+        run: |
+          set -x
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.tag }}"
+          BASE_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}"
+
+          download_and_extract() {
+            local file=$1
+            local arch=$2
+
+            echo "Downloading ${BASE_URL}/${file}..."
+            if curl -fsSL "${BASE_URL}/${file}" -o "${file}"; then
+              SHA=$(sha256sum "${file}" | cut -d' ' -f1)
+              echo "✅ SHA256 ${arch}: ${SHA}"
+
+              # Extrait l'archive dans un dossier temporaire
+              mkdir -p "temp_${arch}"
+              tar -xzf "${file}" -C "temp_${arch}"
+
+              BINS=$(find "temp_${arch}" -maxdepth 1 -type f -perm -111 -exec basename {} \; | tr "\n" " ")
+              echo "✅ Binaires trouvés (${arch}): ${BINS}"
+
+              echo "${SHA}|${BINS}"
+            else
+              echo "ERROR: Failed to download ${file}"
+              exit 1
+            fi
+          }
+
+          ARM64_DATA=$(download_and_extract "coretilus-${TAG}-macos_aarch64.tar.gz" "arm64")
+          echo $ARM64_DATA
+          SHA_ARM64=$(echo "$ARM64_DATA" | tail -1 | cut -d'|' -f1)
+          BINS_ARM64=$(echo "$ARM64_DATA" | tail -1 | cut -d'|' -f2)
+
+          X86_64_DATA=$(download_and_extract "coretilus-${TAG}-macos_x86_64.tar.gz" "x86_64")
+          echo $X86_64_DATA
+          SHA_X86_64=$(echo "$X86_64_DATA" | tail -1 | cut -d'|' -f1)
+          BINS_X86_64=$(echo "$X86_64_DATA" | tail -1 | cut -d'|' -f2)
+
+          echo "sha_arm64=${SHA_ARM64}" >> $GITHUB_OUTPUT
+          echo "sha_x86_64=${SHA_X86_64}" >> $GITHUB_OUTPUT
+
+          echo "binaries=${BINS_ARM64}" >> $GITHUB_OUTPUT
+
+      - name: Checkout tap repository
+        uses: actions/checkout@v4
+        with:
+          repository: titilambert/homebrew-tap
+          ssh-key: ${{ secrets.TAP_DEPLOY_KEY }}
+          path: tap
+
+      - name: Generate formula from template
+        run: |
+          set -x
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.tag }}"
+          TEMPLATE="tap/templates/coretilus.rb.template"
+          FORMULA="tap/Formula/coretilus.rb"
+          BINARIES=$(echo '${{ steps.assets.outputs.binaries }}' | tr " " "\n")
+
+          if [ ! -f "$TEMPLATE" ]; then
+            echo "❌ Error: Template not found at $TEMPLATE"
+            exit 1
+          fi
+
+          mkdir -p "tap/Formula"
+          BINARIES_INSTALL=""
+          BINARIES_TEST=""
+
+          for binary in $BINARIES; do
+            BINARIES_INSTALL="${BINARIES_INSTALL}    bin.install \"${binary}\"\n"
+            BINARIES_TEST="${BINARIES_TEST}    assert_match \"${binary}\", shell_output(\"#{bin}/${binary} --version 2>&1\", 0)\n"
+          done
+
+          cp "$TEMPLATE" "$FORMULA"
+
+          sed -i "s/{{VERSION}}/${VERSION}/g" "$FORMULA"
+          sed -i "s/{{SHA256_ARM64}}/${{ steps.assets.outputs.sha_arm64 }}/g" "$FORMULA"
+          sed -i "s/{{SHA256_X86_64}}/${{ steps.assets.outputs.sha_x86_64 }}/g" "$FORMULA"
+
+          awk -v version="$VERSION" \
+              -v sha_arm64="${{ steps.assets.outputs.sha_arm64 }}" \
+              -v sha_x86_64="${{ steps.assets.outputs.sha_x86_64 }}" \
+              -v bins_install="$BINARIES_INSTALL" \
+              -v bins_test="$BINARIES_TEST" '
+          {
+            gsub(/\{\{VERSION\}\}/, version)
+            gsub(/\{\{SHA256_ARM64\}\}/, sha_arm64)
+            gsub(/\{\{SHA256_X86_64\}\}/, sha_x86_64)
+            gsub(/\{\{BINARIES_INSTALL\}\}/, bins_install)
+            gsub(/\{\{BINARIES_TEST\}\}/, bins_test)
+            print
+          }' "$TEMPLATE" > "$FORMULA"
+
+                  echo "✅ Formula generated:"
+          cat "$FORMULA"
+
+      - name: Commit and push to tap repository
+        run: |
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/coretilus.rb
+          git commit -m "chore: bump coretilus to ${{ steps.version.outputs.tag }}"
+          git tag -a "coretilus-${{ steps.version.outputs.tag }}" -m "Coretilus ${{ steps.version.outputs.tag }}"
+          git push origin main
+          git push origin "coretilus-${{ steps.version.outputs.tag }}"
