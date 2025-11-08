@@ -6,7 +6,7 @@
 /// # Examples
 ///
 /// ```
-/// use coretilus::frame::Frame; // ajuster le chemin selon ton projet
+/// use coretilus::frame::Frame;
 /// let frame1 = Frame::new("Hello, world!");
 /// assert_eq!(frame1.ticks(), 0);
 /// assert_eq!(frame1.content(), "Hello, world!");

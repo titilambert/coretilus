@@ -5,7 +5,6 @@ use crate::{engine::RenderEngine, sprite::SpriteRef};
 
 pub fn process_collisions(engine: &mut RenderEngine, collisions: &mut [Collision]) {
     for col in collisions.iter_mut() {
-        // ⬅️ itérer mutablement
         if col.is_colliding(engine.terminal_size()) {
             col.trigger(engine);
         }
@@ -107,7 +106,6 @@ impl Collision {
         }
     }
 
-    // Détecte la collision entre a et b
     pub fn is_colliding(&mut self, terminal_size: Size) -> bool {
         match self {
             Collision::Sprite { a, b, counter, .. } => {
@@ -120,7 +118,7 @@ impl Collision {
                 }
                 let (a_coord, a_collider) = {
                     let mut a = a.borrow_mut();
-                    (a.current_coordinate(), *a.collider()) // clone pour ne pas garder le borrow
+                    (a.current_coordinate(), *a.collider())
                 };
                 let (b_coord, b_collider) = {
                     let mut b = b.borrow_mut();

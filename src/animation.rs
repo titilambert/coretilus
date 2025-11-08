@@ -5,10 +5,9 @@ pub enum AnimationKind {
     Empty,
     Static,        // Just one frame
     TickBased,     // tick-based, non-looping
-    MovementBased, // change frame quand le sprite bouge
+    MovementBased, // change frame when sprite move
 }
 
-// Animation classique
 pub struct Animation {
     frames: Vec<Frame>,
     current_frame_id: usize,
@@ -137,7 +136,7 @@ impl Animation {
         if !self.has_started() {
             self.started_tick_id = Some(tick_id);
         }
-        let start_tick = self.started_tick_id.unwrap(); // safe ici, jamais None
+        let start_tick = self.started_tick_id.unwrap();
         if self.duration > 0 && tick_id - start_tick >= self.duration {
             self.is_done = true;
         }
@@ -183,9 +182,8 @@ impl Animation {
     }
 
     fn advance_tick(&mut self, tick_id: usize) {
-        let start_tick = self.started_tick_id.unwrap(); // safe ici, jamais None
+        let start_tick = self.started_tick_id.unwrap();
         let start_frame_offset = self.start_frame_id;
-        // Initialise le tick de départ si ce n'est pas encore fait
         let elapsed_ticks = tick_id - start_tick;
 
         let total_ticks = self.get_total_ticks();
@@ -196,7 +194,6 @@ impl Animation {
             return;
         }
 
-        // Décalage de départ en fonction du frame offset
         let offset_ticks: usize = self
             .frames
             .iter()

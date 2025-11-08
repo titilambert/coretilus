@@ -97,20 +97,15 @@ jobs:
         run: |
           mkdir -p artifacts
           BIN_DIR="target/${{ matrix.target }}/release"
-
-          # récupère tous les binaires exécutables dans BIN_DIR
           BIN_LIST=$(find "$BIN_DIR" -maxdepth 1 -type f -perm -111 | xargs -n1 basename)
           echo "Found binaries: $BIN_LIST"
-          # nom de l'archive avec le tag
           case "${{ matrix.os }}" in
             windows-latest)
               ARCHIVE_NAME="coretilus-${{ github.ref_name }}-windows_${{ matrix.arch }}.zip"
-              # construit un tableau PowerShell avec tous les fichiers (format correct)
               BIN_ARRAY=""
               for bin in $BIN_LIST; do
                 BIN_ARRAY+="'$BIN_DIR/$bin',"
               done
-              # retire la dernière virgule
               BIN_ARRAY=${BIN_ARRAY%,}
               pwsh -Command "Compress-Archive -Path @($BIN_ARRAY) -DestinationPath 'artifacts/$ARCHIVE_NAME' -Force"
               ;;
@@ -213,7 +208,6 @@ jobs:
               SHA=$(sha256sum "${file}" | cut -d' ' -f1)
               echo "✅ SHA256 ${arch}: ${SHA}"
 
-              # Extrait l'archive dans un dossier temporaire
               mkdir -p "temp_${arch}"
               tar -xzf "${file}" -C "temp_${arch}"
 

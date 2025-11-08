@@ -158,7 +158,7 @@ impl Trajectory {
 
         // handle ends of path
         if self.direction() == Direction::Linear {
-            let start_tick = self.started_tick_id.unwrap(); // safe ici, jamais None
+            let start_tick = self.started_tick_id.unwrap();
             self.is_done = tick_id - start_tick >= self.path.len();
         }
     }
@@ -179,7 +179,6 @@ impl Trajectory {
                     parent_sprite_mut
                         .movement()
                         .compute_path(terminal_size, parent_sprite_size);
-                    //panic!("{:#?}", self.offset().x());
                     parent_sprite_mut.movement().path()
                 } else {
                     panic!("No parent sprite")

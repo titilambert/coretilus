@@ -88,8 +88,6 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
         assert_eq!(sprites[0].borrow_mut().movement().speed(), 2);
         assert_eq!(sprites[0].borrow_mut().tdid(), 9);
         assert_eq!(collisions.len(), 0);
@@ -100,8 +98,6 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti"), String::from("push")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
         assert_eq!(sprites[0].borrow_mut().movement().speed(), 8);
         assert_eq!(sprites[0].borrow_mut().tdid(), 11);
         assert_eq!(collisions.len(), 0);
@@ -112,8 +108,6 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti"), String::from("pull")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
         assert_eq!(sprites[0].borrow_mut().movement().speed(), 5);
         assert_eq!(sprites[0].borrow_mut().tdid(), 10);
         assert_eq!(collisions.len(), 0);
@@ -125,8 +119,6 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti"), String::from("commit")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
         assert_eq!(sprites[0].borrow_mut().movement().speed(), 0);
         assert_eq!(sprites[0].borrow_mut().tdid(), 13);
         assert_eq!(collisions.len(), 0);
@@ -137,8 +129,6 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti"), String::from("tag")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
         assert_eq!(sprites[0].borrow_mut().movement().speed(), 0);
         assert_eq!(sprites[0].borrow_mut().tdid(), 12);
         assert_eq!(collisions.len(), 0);

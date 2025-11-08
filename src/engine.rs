@@ -123,7 +123,6 @@ impl RenderEngine {
             if frame_time < self.tick_duration {
                 let remaining = self.tick_duration - frame_time;
 
-                // Attend soit un événement clavier, soit la fin du tick
                 if poll(remaining).unwrap()
                     && let Event::Key(key_event) = read().unwrap()
                 {

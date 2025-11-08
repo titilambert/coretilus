@@ -21,7 +21,6 @@ pub struct Sprite {
     tdname: &'static str,
     movement: Trajectory,
     animation: Animation,
-    // state: SpriteState,
     visible: bool,
     pub layer: i32,
     // map key -> action
@@ -182,7 +181,6 @@ impl Sprite {
             sprite_borrow.input_actions.get(&key).map(|a| a as *const _)
         };
         if let Some(action_ptr) = maybe_action {
-            // On convertit le pointeur en référence sûre (le borrow précédent est fini)
             let action: &dyn Fn(&SpriteRef) = unsafe { &*action_ptr };
             action(sprite);
         }
