@@ -1,4 +1,12 @@
-# Coretilus
+<div align="center">
+
+![uutils logo](coretilus.svg)
+
+
+# CoreTilus
+
+
+</div>
 
 **Coretilus** is a parody of GNU Coreutils — a playful collection of typo-triggered command-line tools written in Rust like https://github.com/uutils/coreutils
 
