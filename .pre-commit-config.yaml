@@ -1,10 +1,4 @@
-# .pre-commit-config.yaml
-# Installation: pip install pre-commit
-# Setup: pre-commit install
-# Exécution manuelle: pre-commit run --all-files
-
 repos:
-  # Hooks généraux
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -20,7 +14,6 @@ repos:
       - id: check-case-conflict
         name: Check case conflict
 
-  # Formatage avec rustfmt
   - repo: https://github.com/doublify/pre-commit-rust
     rev: v1.0
     hooks:
@@ -34,11 +27,10 @@ repos:
         name: Check with Clippy
         args: ["--all-targets", "--all-features", "--", "-D", "warnings"]
 
-  # Tests
   - repo: local
     hooks:
       - id: cargo-llvm-cov
-        name: Exécution des tests avec couverture
+        name: Execute test with coverage
         entry: bash -c 'TERM=dumb cargo llvm-cov --all-features --workspace --color=never'
         language: system
         types: [rust]
@@ -47,58 +39,52 @@ repos:
           TERM: dumb
 
       - id: cargo-doc
-        name: Vérification de la documentation
+        name: Check documentation
         entry: cargo doc
         language: system
         types: [rust]
         pass_filenames: false
         args: ["--no-deps", "--document-private-items", "--all-features"]
 
-      # Audit de sécurité (nécessite cargo-audit)
       - id: cargo-audit
-        name: Audit de sécurité
-        entry: bash -c 'if command -v cargo-audit &> /dev/null; then cargo audit; else echo "⚠️  cargo-audit non installé, skip audit de sécurité"; fi'
+        name: Security audit
+        entry: bash -c 'if command -v cargo-audit &> /dev/null; then cargo audit; else echo "⚠️  cargo-audit not installed, skip security audit"; fi'
         language: system
         types: [rust]
         pass_filenames: false
         verbose: true
 
-      # Vérification des dépendances inutilisées (nécessite cargo-udeps)
       - id: cargo-udeps
-        name: Dépendances inutilisées
+        name: unused dependencies
         entry: bash -c '
           if rustup toolchain list | grep -q nightly; then
-          echo "🔍 Vérification des dépendances inutilisées avec nightly..."
+          echo "🔍 Check unused dependencies with nightly..."
           cargo +nightly udeps --all-targets;
           else
-          echo "⚠️  Toolchain nightly non installée, skip cargo-udeps";
+          echo "⚠️  Toolchain nightly not installed, skip cargo-udeps";
           fi '
         language: system
         types: [rust]
         pass_filenames: false
         verbose: true
 
-      # Détection de println! et dbg! (facultatif)
       - id: no-debug-prints
-        name: Détection de println! et dbg!
-        entry: bash -c 'if git diff --cached --name-only | grep "\.rs$" | xargs grep -n "println!\|dbg!" 2>/dev/null; then echo "⚠️  println! ou dbg! détecté"; exit 1; fi'
+        name: Detection of println! and dbg!
+        entry: bash -c 'if git diff --cached --name-only | grep "\.rs$" | xargs grep -n "println!\|dbg!" 2>/dev/null; then echo "⚠️  println! or dbg! detected"; exit 1; fi'
         language: system
         types: [rust]
         pass_filenames: false
 
-      # Vérification que Cargo.lock est à jour
       - id: cargo-lock
-        name: Vérification Cargo.lock
+        name: Check Cargo.lock
         entry: cargo update --dry-run
         language: system
         types: [rust]
         pass_filenames: false
 
-# Configuration globale
 default_install_hook_types: [pre-commit, pre-push]
 default_stages: [commit]
 
-# Exclure certains répertoires
 exclude: |
   (?x)^(
       target/|
@@ -107,7 +93,6 @@ exclude: |
       .*/frames/.*\.adoc$
   )$
 
-# Options pour CI
 ci:
   autofix_commit_msg: |
     [pre-commit.ci] auto fixes from pre-commit hooks

@@ -25,6 +25,8 @@ jobs:
 
       - name: Install cargo-llvm-cov
         run: cargo install cargo-llvm-cov --version 0.6.21
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
       - name: Install rustfmt and clippy
         run: rustup component add --toolchain nightly-2025-10-12-x86_64-unknown-linux-gnu rustfmt clippy
       - name: pre-commit
