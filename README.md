@@ -24,6 +24,7 @@ Each binary is intentionally useless, funny, or just delightfully absurd.
 | `mr`     | `rm`         | 🕓 - PLANNED | Land the rocket without crashing it. |
 | `pc`     | `cp`         | 🕓 - PLANNED | Copy file from Floppy to IDE using a 486 CPU. |
 | `grpe`   | `grep`       | 🕓 - PLANNED | Searches nothing and finds everything. |
+| `dog`    | `dig`        | 🕓 - PLANNED | Dogs can dig. |
 | ...adn   | more         | 🕓 - PLANNED | Coming soon, one typo at a time. |
 | ...yuor  | own ideas    | 🕓 - PLANNED | Open an issue or a PR. |
 
