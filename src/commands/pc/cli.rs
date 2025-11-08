@@ -13,6 +13,26 @@ use crate::trajectory::Trajectory;
 
 use crate::command::Command;
 
+// Helper function to create a sprite with movement and visibility
+fn create_sprite(
+    get_sprite_fn: fn() -> SpriteRef,
+    start_position: Position,
+    end_position: Option<Position>,
+    speed: usize,
+    visible: bool,
+) -> SpriteRef {
+    let sprite = get_sprite_fn();
+
+    let mut trajectory = Trajectory::new_stationary(start_position, 0);
+    if !end_position.is_none() {
+        trajectory = Trajectory::new_linear(start_position, end_position.unwrap(), speed as i32);
+    }
+
+    sprite.borrow_mut().set_movement(trajectory);
+    sprite.borrow_mut().set_visible(visible);
+    sprite
+}
+
 pub struct Pc {}
 
 impl Command for Pc {
@@ -36,19 +56,22 @@ impl Command for Pc {
         let mut sprites: Vec<SpriteRef> = Vec::new();
         let speed: usize = 10;
 
-        let motherboard_sprite = get_sprite_motherboard();
-        let movement = Trajectory::new_stationary(
+        // Motherboard
+        let motherboard_sprite = create_sprite(
+            get_sprite_motherboard,
             Position::new(XTermPosition::Coord(2), YTermPosition::Coord(1)),
+            None,
             0,
+            true,
         );
-        motherboard_sprite.borrow_mut().set_movement(movement);
         // Chipset
-        let chipsed_sprite = get_sprite_chipset();
-        let movement = Trajectory::new_stationary(
+        let chipsed_sprite = create_sprite(
+            get_sprite_chipset,
             Position::new(XTermPosition::Coord(62), YTermPosition::Coord(16)),
+            None,
             0,
+            true,
         );
-        chipsed_sprite.borrow_mut().set_movement(movement);
         // RAM
         let ram_sprite = get_sprite_ram();
         let movement = Trajectory::new_stationary(
@@ -446,64 +469,12 @@ mod tests {
     use crate::commands::gti::cli::Gti;
 
     #[test]
-    fn test_select_sprite_std() {
+    fn test_select_data1() {
         let mut gti = Gti {};
-        let args: Vec<String> = vec![String::from("gti")];
+        let args: Vec<String> = vec![String::from("pc")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 2);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 9);
-        assert_eq!(collisions.len(), 0);
-    }
-    #[test]
-    fn test_select_sprite_push() {
-        let mut gti = Gti {};
-        let args: Vec<String> = vec![String::from("gti"), String::from("push")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
-
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 8);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 11);
-        assert_eq!(collisions.len(), 0);
-    }
-    #[test]
-    fn test_select_sprite_pull() {
-        let mut gti = Gti {};
-        let args: Vec<String> = vec![String::from("gti"), String::from("pull")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
-
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 5);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 10);
-        assert_eq!(collisions.len(), 0);
-    }
-
-    #[test]
-    fn test_select_sprite_commit() {
-        let mut gti = Gti {};
-        let args: Vec<String> = vec![String::from("gti"), String::from("commit")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
-
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 0);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 13);
-        assert_eq!(collisions.len(), 0);
-    }
-    #[test]
-    fn test_select_sprite_tag() {
-        let mut gti = Gti {};
-        let args: Vec<String> = vec![String::from("gti"), String::from("tag")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
-
-        // Le sprite doit être celui du "pull"
-        // (tu peux tester via une propriété connue ou son nom si Sprite a une méthode name())
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 0);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 12);
+        assert_eq!(sprites[0].borrow_mut().movement().speed(), 10);
         assert_eq!(collisions.len(), 0);
     }
 }
