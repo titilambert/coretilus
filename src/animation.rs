@@ -156,7 +156,7 @@ impl Animation {
                 {
                     self.advance_movement(new, prev);
                 } else {
-                    panic!("DDD");
+                    panic!("No next coord");
                 }
             }
         }

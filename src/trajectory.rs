@@ -177,9 +177,9 @@ impl Trajectory {
                     let parent_sprite_size = sprite_ref.borrow().size();
                     let mut parent_sprite_mut = sprite_ref.borrow_mut();
                     parent_sprite_mut
-                        .movement()
+                        .trajectory()
                         .compute_path(terminal_size, parent_sprite_size);
-                    parent_sprite_mut.movement().path()
+                    parent_sprite_mut.trajectory().path()
                 } else {
                     panic!("No parent sprite")
                 }
@@ -368,7 +368,7 @@ mod tests {
 
         let trajectory = Trajectory::new_linear(start, end, 1);
         let sprite = Sprite::new(1, "test", 10);
-        sprite.borrow_mut().set_movement(trajectory.clone());
+        sprite.borrow_mut().set_trajectory(trajectory.clone());
         let anim = Animation::new_movement_based(
             vec![Frame::new("FAKEFRAME10"), Frame::new("FAKEFRAME11")],
             0,
@@ -380,7 +380,7 @@ mod tests {
         let sprite_rel = Sprite::new(1, "test", 10);
         sprite_rel
             .borrow_mut()
-            .set_movement(trajectory_relative.clone());
+            .set_trajectory(trajectory_relative.clone());
 
         let anim_rel = Animation::new_movement_based(
             vec![Frame::new("FAKEFRAME20"), Frame::new("FAKEFRAME21")],

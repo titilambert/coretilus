@@ -202,12 +202,12 @@ mod tests {
         let sprite_a = Sprite::new(1, "test", 10);
         let anim = Animation::new_static(frames_a);
         sprite_a.borrow_mut().set_animation(anim);
-        let movement = Trajectory::new_stationary(
+        let trajectory = Trajectory::new_stationary(
             Position::new(XTermPosition::Coord(30), YTermPosition::Coord(30)),
             300,
         );
         let terminal_size = Size::new(30, 30);
-        sprite_a.borrow_mut().set_movement(movement);
+        sprite_a.borrow_mut().set_trajectory(trajectory);
         sprite_a.borrow_mut().compute_path(terminal_size);
         let frames_b = Frame::new("ascii");
         let sprite_b = Sprite::new(1, "test", 10);
@@ -233,12 +233,12 @@ mod tests {
         let sprite_a = Sprite::new(1, "test", 10);
         let anim = Animation::new_static(frames_a);
         sprite_a.clone().borrow_mut().set_animation(anim);
-        let movement = Trajectory::new_stationary(
+        let trajectory = Trajectory::new_stationary(
             Position::new(XTermPosition::Coord(0), YTermPosition::Coord(0)),
             300,
         );
         let terminal_size = Size::new(30, 30);
-        sprite_a.borrow_mut().set_movement(movement);
+        sprite_a.borrow_mut().set_trajectory(trajectory);
         sprite_a.borrow_mut().compute_path(terminal_size);
         let frames_b = Frame::new("ascii");
         let sprite_b = Sprite::new(1, "test", 10);

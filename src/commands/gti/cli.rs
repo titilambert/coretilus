@@ -51,19 +51,19 @@ impl Command for Gti {
 
         let mut sprites: Vec<SpriteRef> = Vec::new();
         if is_loop {
-            let movement = Trajectory::new_stationary(
+            let trajectory = Trajectory::new_stationary(
                 Position::new(XTermPosition::Coord(2), YTermPosition::Coord(10)),
                 200,
             );
-            sprite.borrow_mut().set_movement(movement);
+            sprite.borrow_mut().set_trajectory(trajectory);
             sprites.push(sprite);
         } else {
-            let movement = Trajectory::new_linear(
+            let trajectory = Trajectory::new_linear(
                 Position::new(XTermPosition::LeftOut, YTermPosition::Coord(10)),
                 Position::new(XTermPosition::RightOut, YTermPosition::Coord(10)),
                 speed,
             );
-            sprite.borrow_mut().set_movement(movement);
+            sprite.borrow_mut().set_trajectory(trajectory);
             sprites.push(sprite);
         }
         let collisions: Vec<Collision> = Vec::new();
@@ -88,7 +88,7 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 2);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 2);
         assert_eq!(sprites[0].borrow_mut().tdid(), 9);
         assert_eq!(collisions.len(), 0);
     }
@@ -98,7 +98,7 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti"), String::from("push")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 8);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 8);
         assert_eq!(sprites[0].borrow_mut().tdid(), 11);
         assert_eq!(collisions.len(), 0);
     }
@@ -108,7 +108,7 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti"), String::from("pull")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 5);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 5);
         assert_eq!(sprites[0].borrow_mut().tdid(), 10);
         assert_eq!(collisions.len(), 0);
     }
@@ -119,7 +119,7 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti"), String::from("commit")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 0);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 0);
         assert_eq!(sprites[0].borrow_mut().tdid(), 13);
         assert_eq!(collisions.len(), 0);
     }
@@ -129,7 +129,7 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti"), String::from("tag")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 0);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 0);
         assert_eq!(sprites[0].borrow_mut().tdid(), 12);
         assert_eq!(collisions.len(), 0);
     }

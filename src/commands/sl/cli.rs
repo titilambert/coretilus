@@ -65,8 +65,8 @@ impl Command for Sl {
         } else if flags.contains("F") {
             coal_coord = Coord::new(coal_x_offset as i32 + 1, -1);
         }
-        let coal_movement = Trajectory::new_relative(locomotive_sprite.clone(), coal_coord);
-        coal_sprite.borrow_mut().set_movement(coal_movement);
+        let coal_trajectory = Trajectory::new_relative(locomotive_sprite.clone(), coal_coord);
+        coal_sprite.borrow_mut().set_trajectory(coal_trajectory);
         sprite_list.push(coal_sprite.clone());
 
         // Handle smoke
@@ -75,8 +75,8 @@ impl Command for Sl {
             smoke_x_offset = 5;
         }
         let smoke_coord = Coord::new(smoke_x_offset as i32, locomotive_height as i32);
-        let smoke_movement = Trajectory::new_relative(locomotive_sprite.clone(), smoke_coord);
-        smoke_sprite.borrow_mut().set_movement(smoke_movement);
+        let smoke_trajectory = Trajectory::new_relative(locomotive_sprite.clone(), smoke_coord);
+        smoke_sprite.borrow_mut().set_trajectory(smoke_trajectory);
         sprite_list.push(smoke_sprite.clone());
 
         // Locomotive
@@ -91,8 +91,8 @@ impl Command for Sl {
         if flags.contains("F") {
             start_position = Position::new(XTermPosition::RightOut, YTermPosition::Coord(0));
         }
-        let movement = Trajectory::new_linear(start_position, end_position, 7);
-        locomotive_sprite.borrow_mut().set_movement(movement);
+        let trajectory = Trajectory::new_linear(start_position, end_position, 7);
+        locomotive_sprite.borrow_mut().set_trajectory(trajectory);
         sprite_list.push(locomotive_sprite.clone());
         // Handle logo cars
         if flags.contains("l") {
@@ -103,21 +103,21 @@ impl Command for Sl {
                 y_offset = -2
             }
             let car1_coord = Coord::new(coal_width as i32 + 1, y_offset);
-            let car1_movement = Trajectory::new_relative(coal_sprite.clone(), car1_coord);
-            car1_sprite.borrow_mut().set_movement(car1_movement);
+            let car1_trajectory = Trajectory::new_relative(coal_sprite.clone(), car1_coord);
+            car1_sprite.borrow_mut().set_trajectory(car1_trajectory);
             let car2_sprite = get_sprite_logo_car();
             let car2_coord = Coord::new(car1_width as i32 + 1, y_offset);
-            let car2_movement = Trajectory::new_relative(car1_sprite.clone(), car2_coord);
-            car2_sprite.borrow_mut().set_movement(car2_movement);
+            let car2_trajectory = Trajectory::new_relative(car1_sprite.clone(), car2_coord);
+            car2_sprite.borrow_mut().set_trajectory(car2_trajectory);
             if flags.contains("a") {
                 // Handle accident on locomotive
                 let accident_loco_coords = Coord::new(13, 3);
                 let accident_sprite_loco = get_sprite_accident(0);
-                let accident_movement_loco =
+                let accident_trajectory_loco =
                     Trajectory::new_relative(locomotive_sprite.clone(), accident_loco_coords);
                 accident_sprite_loco
                     .borrow_mut()
-                    .set_movement(accident_movement_loco);
+                    .set_trajectory(accident_trajectory_loco);
                 sprite_list.push(accident_sprite_loco);
 
                 // Handle accident on cars
@@ -127,11 +127,11 @@ impl Command for Sl {
                     for (index, accident_coord) in accident_coords.iter().enumerate() {
                         let accident_carx_1_coords = accident_coord;
                         let accident_sprite_car1_1 = get_sprite_accident(index);
-                        let accident_movement_cart1_1 =
+                        let accident_trajectory_cart1_1 =
                             Trajectory::new_relative(parent.clone(), *accident_carx_1_coords);
                         accident_sprite_car1_1
                             .borrow_mut()
-                            .set_movement(accident_movement_cart1_1);
+                            .set_trajectory(accident_trajectory_cart1_1);
                         sprite_list.push(accident_sprite_car1_1);
                     }
                 }
@@ -148,9 +148,11 @@ impl Command for Sl {
             }
             for (index, accident_coord) in accidents_coords.iter().enumerate() {
                 let accident_sprite = get_sprite_accident(index);
-                let accident_movement =
+                let accident_trajectory =
                     Trajectory::new_relative(locomotive_sprite.clone(), *accident_coord);
-                accident_sprite.borrow_mut().set_movement(accident_movement);
+                accident_sprite
+                    .borrow_mut()
+                    .set_trajectory(accident_trajectory);
                 sprite_list.push(accident_sprite);
             }
         }
@@ -177,7 +179,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 3);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 1);
         assert_eq!(collisions.len(), 0);
     }
@@ -188,7 +190,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 5);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 1);
         assert_eq!(collisions.len(), 0);
     }
@@ -200,7 +202,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 10);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 2);
         assert_eq!(collisions.len(), 0);
     }
@@ -212,7 +214,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 5);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 1);
         assert_eq!(collisions.len(), 0);
     }
@@ -224,7 +226,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 10);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 2);
         assert_eq!(collisions.len(), 0);
     }
@@ -236,7 +238,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 5);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 3);
         assert_eq!(collisions.len(), 0);
     }
@@ -248,7 +250,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 5);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 3);
         assert_eq!(collisions.len(), 0);
     }
@@ -260,7 +262,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 5);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 2);
         assert_eq!(collisions.len(), 0);
     }
@@ -271,7 +273,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 3);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 3);
         assert_eq!(collisions.len(), 0);
     }
@@ -283,7 +285,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 5);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 2);
         assert_eq!(collisions.len(), 0);
     }
@@ -294,7 +296,7 @@ mod tests {
         let (sprites, collisions) = sl.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 3);
-        assert_eq!(sprites[2].borrow_mut().movement().speed(), 7);
+        assert_eq!(sprites[2].borrow_mut().trajectory().speed(), 7);
         assert_eq!(sprites[2].borrow_mut().tdid(), 3);
         assert_eq!(collisions.len(), 0);
     }

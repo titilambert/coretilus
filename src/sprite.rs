@@ -19,7 +19,7 @@ pub struct Sprite {
     id: Uuid,
     tdid: u64,
     tdname: &'static str,
-    movement: Trajectory,
+    trajectory: Trajectory,
     animation: Animation,
     visible: bool,
     pub layer: i32,
@@ -31,7 +31,7 @@ pub struct Sprite {
 
 impl Sprite {
     pub fn new(tdid: u64, tdname: &'static str, layer: i32) -> SpriteRef {
-        let movement = Trajectory::new_none(
+        let trajectory = Trajectory::new_none(
             Position::new(XTermPosition::Coord(0), YTermPosition::Coord(0)),
             Position::new(XTermPosition::Coord(0), YTermPosition::Coord(0)),
             Direction::None,
@@ -41,7 +41,7 @@ impl Sprite {
             id,
             tdid,
             tdname,
-            movement,
+            trajectory,
             animation: Animation::new_static(Frame::new("")),
             visible: true,
             layer,
@@ -66,8 +66,8 @@ impl Sprite {
         if !self.visible {
             return false;
         }
-        match self.movement.direction() {
-            Direction::Linear => self.movement.is_done(),
+        match self.trajectory.direction() {
+            Direction::Linear => self.trajectory.is_done(),
             Direction::Stationary => {
                 if self.animation.kind() == AnimationKind::Static {
                     return true;
@@ -77,7 +77,7 @@ impl Sprite {
                 }
                 self.animation.is_done()
             }
-            Direction::Relative => self.movement.is_done(),
+            Direction::Relative => self.trajectory.is_done(),
             _ => self.animation.is_done(),
         }
     }
@@ -89,7 +89,7 @@ impl Sprite {
         }
         let new_coord = self.get_coordinate(tick_id);
         let next_coord = self.get_coordinate(tick_id + 1);
-        self.movement.advance(tick_id, terminal_size, self.size());
+        self.trajectory.advance(tick_id, terminal_size, self.size());
         self.animation
             .advance(tick_id, Some(new_coord), Some(next_coord));
     }
@@ -128,24 +128,24 @@ impl Sprite {
             .unwrap()
     }
 
-    // Movement and position related
+    // Trajectory and position related
     fn get_coordinate(&mut self, tick_id: usize) -> Coord {
-        self.movement.get_coordinate(tick_id)
+        self.trajectory.get_coordinate(tick_id)
     }
     pub fn current_coordinate(&self) -> Coord {
-        self.movement.current_coordinate()
+        self.trajectory.current_coordinate()
     }
 
-    pub fn set_movement(&mut self, movement: Trajectory) {
-        self.movement = movement;
+    pub fn set_trajectory(&mut self, trajectory: Trajectory) {
+        self.trajectory = trajectory;
     }
 
-    pub fn movement(&mut self) -> &mut Trajectory {
-        &mut self.movement
+    pub fn trajectory(&mut self) -> &mut Trajectory {
+        &mut self.trajectory
     }
 
     pub fn compute_path(&mut self, terminal_size: Size) {
-        self.movement.compute_path(terminal_size, self.size());
+        self.trajectory.compute_path(terminal_size, self.size());
     }
     // Animation
     pub fn set_animation(&mut self, animation: Animation) {
