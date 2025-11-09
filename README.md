@@ -114,3 +114,16 @@ cargo llvm-cov --doctests --open
 ```bash
 cargo doc --no-deps --open
 ```
+
+## Generate gifs
+
+First, we need to compile then we use https://github.com/charmbracelet/vhs
+
+```bash
+RUSTFLAGS="-C target-feature=+crt-static" cargo build --release
+docker run --rm -v `pwd`/gifs:/vhs/output -v `pwd`:/src:ro -v `pwd`/target/release:/usr/local/bin ghcr.io/charmbracelet/vhs /src/coretilus.tape
+for COMMAND in $(ls -d src/commands/*/ | xargs -n1 basename)
+do
+docker run --rm -v `pwd`/gifs:/vhs/output -v `pwd`/src:/src:ro -v `pwd`/target/release:/usr/local/bin ghcr.io/charmbracelet/vhs /src/commands/${COMMAND}/${COMMAND}.tape
+done
+```
