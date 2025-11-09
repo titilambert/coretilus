@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use crate::collision::Collision;
 use crate::commands::pc::sprite::{
     get_sprite_cachel2, get_sprite_chipset, get_sprite_cpu, get_sprite_data1, get_sprite_data2,
@@ -7,7 +10,7 @@ use crate::commands::pc::sprite::{
 };
 use crate::coord::{Position, XTermPosition, YTermPosition};
 use crate::engine::RenderEngine;
-use crate::sprite::SpriteRef;
+use crate::sprite::{Sprite, SpriteRef};
 use crate::tools::parse_args;
 use crate::trajectory::Trajectory;
 
@@ -15,6 +18,7 @@ use crate::command::Command;
 
 // Helper function to create a sprite with movement and visibility
 fn create_sprite(
+    mut sprite_list: Vec<Rc<RefCell<Sprite>>>,
     get_sprite_fn: fn() -> SpriteRef,
     start_position: Position,
     end_position: Option<Position>,
@@ -28,8 +32,9 @@ fn create_sprite(
         trajectory = Trajectory::new_linear(start_position, end_position.unwrap(), speed as i32);
     }
 
-    sprite.borrow_mut().set_movement(trajectory);
+    sprite.borrow_mut().set_trajectory(trajectory);
     sprite.borrow_mut().set_visible(visible);
+    sprite_list.push(sprite.clone());
     sprite
 }
 
@@ -57,7 +62,8 @@ impl Command for Pc {
         let speed: usize = 10;
 
         // Motherboard
-        let motherboard_sprite = create_sprite(
+        create_sprite(
+            sprites.clone(),
             get_sprite_motherboard,
             Position::new(XTermPosition::Coord(2), YTermPosition::Coord(1)),
             None,
@@ -66,6 +72,7 @@ impl Command for Pc {
         );
         // Chipset
         let chipsed_sprite = create_sprite(
+            sprites.clone(),
             get_sprite_chipset,
             Position::new(XTermPosition::Coord(62), YTermPosition::Coord(16)),
             None,
@@ -73,26 +80,28 @@ impl Command for Pc {
             true,
         );
         // RAM
-        let ram_sprite = get_sprite_ram();
-        let movement = Trajectory::new_stationary(
+        let ram_sprite = create_sprite(
+            sprites.clone(),
+            get_sprite_ram,
             Position::new(XTermPosition::Coord(49), YTermPosition::Coord(10)),
+            None,
             0,
+            true,
         );
-        ram_sprite.borrow_mut().set_movement(movement);
         // Cachel2
         let cachel2_sprite = get_sprite_cachel2();
         let movement = Trajectory::new_stationary(
             Position::new(XTermPosition::Coord(78), YTermPosition::Coord(22)),
             0,
         );
-        cachel2_sprite.borrow_mut().set_movement(movement);
+        cachel2_sprite.borrow_mut().set_trajectory(movement);
         // CPU
         let cpu_sprite = get_sprite_cpu();
         let movement = Trajectory::new_stationary(
             Position::new(XTermPosition::Coord(58), YTermPosition::Coord(23)),
             0,
         );
-        cpu_sprite.borrow_mut().set_movement(movement);
+        cpu_sprite.borrow_mut().set_trajectory(movement);
         // DATA1
         let data1_sprite = get_sprite_data1();
         let movement = Trajectory::new_linear(
@@ -100,7 +109,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(36), YTermPosition::Coord(20)),
             1 * speed as i32,
         );
-        data1_sprite.borrow_mut().set_movement(movement);
+        data1_sprite.borrow_mut().set_trajectory(movement);
         // DATA2
         let data2_sprite = get_sprite_data2();
         data2_sprite.borrow_mut().set_visible(false);
@@ -109,7 +118,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(66), YTermPosition::Coord(22)),
             1 * speed as i32,
         );
-        data2_sprite.borrow_mut().set_movement(movement2);
+        data2_sprite.borrow_mut().set_trajectory(movement2);
         // DATA3
         let data3_sprite = get_sprite_data3();
         data3_sprite.borrow_mut().set_visible(false);
@@ -118,7 +127,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(68), YTermPosition::Coord(19)),
             1 * speed as i32,
         );
-        data3_sprite.borrow_mut().set_movement(movement3);
+        data3_sprite.borrow_mut().set_trajectory(movement3);
         // DATA4
         let data4_sprite = get_sprite_data4();
         let data4_sprite_id = data4_sprite.borrow().id();
@@ -128,7 +137,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(68), YTermPosition::Coord(10)),
             1 * speed as i32,
         );
-        data4_sprite.borrow_mut().set_movement(movement4);
+        data4_sprite.borrow_mut().set_trajectory(movement4);
         // DATA5
         let data5_sprite = get_sprite_data5();
         let data5_sprite_id = data5_sprite.borrow().id();
@@ -138,7 +147,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(78), YTermPosition::Coord(21)),
             1 * speed as i32,
         );
-        data5_sprite.borrow_mut().set_movement(movement5);
+        data5_sprite.borrow_mut().set_trajectory(movement5);
         // DATA6
         let data6_sprite = get_sprite_data6();
         let data6_sprite_id = data6_sprite.borrow().id();
@@ -148,7 +157,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(58), YTermPosition::Coord(32)),
             1 * speed as i32,
         );
-        data6_sprite.borrow_mut().set_movement(movement6);
+        data6_sprite.borrow_mut().set_trajectory(movement6);
         // DATA7
         let data7_sprite = get_sprite_data7();
         data7_sprite.borrow_mut().set_visible(false);
@@ -157,7 +166,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(61), YTermPosition::Coord(28)),
             1 * speed as i32,
         );
-        data7_sprite.borrow_mut().set_movement(movement7);
+        data7_sprite.borrow_mut().set_trajectory(movement7);
         // DATA8
         let data8_sprite = get_sprite_data8();
         let data8_sprite_id = data8_sprite.borrow().id();
@@ -167,7 +176,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(68), YTermPosition::Coord(32)),
             1 * speed as i32,
         );
-        data8_sprite.borrow_mut().set_movement(movement8);
+        data8_sprite.borrow_mut().set_trajectory(movement8);
         // DATA9
         let data9_sprite = get_sprite_data9();
         data9_sprite.borrow_mut().set_visible(false);
@@ -176,7 +185,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(78), YTermPosition::Coord(32)),
             1 * speed as i32,
         );
-        data9_sprite.borrow_mut().set_movement(movement9);
+        data9_sprite.borrow_mut().set_trajectory(movement9);
         // DATA10
         let data10_sprite = get_sprite_data10();
         let data10_sprite_id = data10_sprite.borrow().id();
@@ -186,7 +195,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(78), YTermPosition::Coord(10)),
             1 * speed as i32,
         );
-        data10_sprite.borrow_mut().set_movement(movement10);
+        data10_sprite.borrow_mut().set_trajectory(movement10);
         // DATA11
         let data11_sprite = get_sprite_data11();
         let data11_sprite_id = data11_sprite.borrow().id();
@@ -196,7 +205,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(68), YTermPosition::Coord(16)),
             1 * speed as i32,
         );
-        data11_sprite.borrow_mut().set_movement(movement11);
+        data11_sprite.borrow_mut().set_trajectory(movement11);
         // DATA12
         let data12_sprite = get_sprite_data12();
         let data12_sprite_id = data12_sprite.borrow().id();
@@ -206,7 +215,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(68), YTermPosition::Coord(22)),
             1 * speed as i32,
         );
-        data12_sprite.borrow_mut().set_movement(movement12);
+        data12_sprite.borrow_mut().set_trajectory(movement12);
         // DATA13
         let data13_sprite = get_sprite_data13();
         let data13_sprite_id = data13_sprite.borrow().id();
@@ -216,7 +225,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(20), YTermPosition::Coord(22)),
             1 * speed as i32,
         );
-        data13_sprite.borrow_mut().set_movement(movement13);
+        data13_sprite.borrow_mut().set_trajectory(movement13);
 
         // DATA14
         let data14_sprite = get_sprite_data14();
@@ -226,7 +235,7 @@ impl Command for Pc {
             Position::new(XTermPosition::Coord(23), YTermPosition::Coord(31)),
             1 * speed as i32,
         );
-        data14_sprite.borrow_mut().set_movement(movement14);
+        data14_sprite.borrow_mut().set_trajectory(movement14);
 
         // COLLISIONS
         // Collision data1/data2
@@ -433,7 +442,7 @@ impl Command for Pc {
         );
         collisions.push(collision13);
 
-        sprites.push(motherboard_sprite);
+        //sprites.push(motherboard_sprite);
         sprites.push(chipsed_sprite);
         sprites.push(ram_sprite);
         sprites.push(cachel2_sprite);
@@ -474,7 +483,7 @@ mod tests {
         let args: Vec<String> = vec![String::from("pc")];
         let (sprites, collisions) = gti.select_sprites(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 10);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 10);
         assert_eq!(collisions.len(), 0);
     }
 }
