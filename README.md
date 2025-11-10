@@ -3,14 +3,14 @@
 ![uutils logo](coretilus.svg)
 
 
-# CoreTilus
+# coretilus
 
 
 </div>
 
-**Coretilus** is a parody of GNU Coreutils — a playful collection of typo-triggered command-line tools written in Rust like https://github.com/uutils/coreutils
+**coretilus** is a parody of GNU Coreutils — a playful collection of typo-triggered command-line tools written in Rust like https://github.com/uutils/coreutils
 
-Whenever you mistype something like `git` → `gti` or `grep` → `grpe`, Coretilus answers instead of complaining.
+Whenever you mistype something like `git` → `gti` or `grep` → `grpe`, coretilus answers instead of complaining.
 Each binary is intentionally useless, funny, or just delightfully absurd.
 
 ---
@@ -40,7 +40,7 @@ Each binary is intentionally useless, funny, or just delightfully absurd.
 
 ## ☑️ TODOs
 
-* [ ] Add links/credits to original ascii authors
+* [ ] Add links/credits to original ascii authors (WIP)
 * [ ] Add/Generate man pages
 * [ ] Create topydex command
 * [ ] Complete tests and increate test coverage
