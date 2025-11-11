@@ -32,7 +32,7 @@ const FRAME_DATAL5: &str = include_str!("./frames/datal5.adoc");
 pub fn get_sprite_motherboard() -> SpriteRef {
     let frames = vec![Frame::new(FRAME_MOTHERBOARD)];
     let anim = Animation::new_tick_based(frames, 0, 1, 50, true);
-    let sprite = Sprite::new(50, "Motherboard", 1);
+    let sprite = Sprite::new(50, String::from("Motherboard"), 1);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -40,14 +40,14 @@ pub fn get_sprite_motherboard() -> SpriteRef {
 pub fn get_sprite_chipset() -> SpriteRef {
     let frame = Frame::new(FRAME_CHIPSET);
     let anim = Animation::new_static(frame);
-    let sprite = Sprite::new(20, "Chipset", 100);
+    let sprite = Sprite::new(20, String::from("Chipset"), 100);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
 pub fn get_sprite_ram() -> SpriteRef {
     let frame = Frame::new(FRAME_RAM);
     let anim = Animation::new_static(frame);
-    let sprite = Sprite::new(20, "Ram", 100);
+    let sprite = Sprite::new(20, String::from("RAM"), 100);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -55,190 +55,93 @@ pub fn get_sprite_ram() -> SpriteRef {
 pub fn get_sprite_cachel2() -> SpriteRef {
     let frame = Frame::new(FRAME_CACHEL2);
     let anim = Animation::new_static(frame);
-    let sprite = Sprite::new(20, "Ram", 100);
+    let sprite = Sprite::new(20, String::from("cachel2"), 100);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
 pub fn get_sprite_cpu() -> SpriteRef {
     let frame = Frame::new(FRAME_CPU);
     let anim = Animation::new_static(frame);
-    let sprite = Sprite::new(20, "Ram", 100);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-pub fn get_sprite_data1() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAD1), Frame::new(FRAME_DATAD2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAD3)).take(7));
-    frames.extend([Frame::new(FRAME_DATAD4), Frame::new(FRAME_DATAD5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data1", 11);
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
+    let sprite = Sprite::new(20, String::from("CPU"), 100);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
 
-pub fn get_sprite_data2() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAR1), Frame::new(FRAME_DATAR2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAR3)).take(29));
-    frames.extend([Frame::new(FRAME_DATAR4), Frame::new(FRAME_DATAR5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data2", 12);
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
+enum Orientation {
+    Up,
+    Down,
+    Left,
+    Right,
 }
 
-pub fn get_sprite_data3() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAD1), Frame::new(FRAME_DATAD2)];
-    frames.extend([Frame::new(FRAME_DATAD4), Frame::new(FRAME_DATAD5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data3", 13);
-
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
+fn build_frame_list(orientation: Orientation, repeat_count: usize) -> Vec<Frame> {
+    match orientation {
+        Orientation::Down => vec![Frame::new(FRAME_DATAD1), Frame::new(FRAME_DATAD2)]
+            .into_iter()
+            .chain(std::iter::repeat_n(Frame::new(FRAME_DATAD3), repeat_count))
+            .chain(vec![Frame::new(FRAME_DATAD4), Frame::new(FRAME_DATAD5)])
+            .collect::<Vec<Frame>>(),
+        Orientation::Up => vec![Frame::new(FRAME_DATAU1), Frame::new(FRAME_DATAU2)]
+            .into_iter()
+            .chain(std::iter::repeat_n(Frame::new(FRAME_DATAU3), repeat_count))
+            .chain(vec![Frame::new(FRAME_DATAU4), Frame::new(FRAME_DATAU5)])
+            .collect::<Vec<Frame>>(),
+        Orientation::Right => vec![Frame::new(FRAME_DATAR1), Frame::new(FRAME_DATAR2)]
+            .into_iter()
+            .chain(std::iter::repeat_n(Frame::new(FRAME_DATAR3), repeat_count))
+            .chain(vec![Frame::new(FRAME_DATAR4), Frame::new(FRAME_DATAR5)])
+            .collect::<Vec<Frame>>(),
+        Orientation::Left => vec![Frame::new(FRAME_DATAL1), Frame::new(FRAME_DATAL2)]
+            .into_iter()
+            .chain(std::iter::repeat_n(Frame::new(FRAME_DATAL3), repeat_count))
+            .chain(vec![Frame::new(FRAME_DATAL4), Frame::new(FRAME_DATAL5)])
+            .collect::<Vec<Frame>>(),
+    }
 }
 
-pub fn get_sprite_data4() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAD1), Frame::new(FRAME_DATAD2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAD3)).take(7));
-    frames.extend([Frame::new(FRAME_DATAD4), Frame::new(FRAME_DATAD5)]);
+pub fn get_sprite_data(index: usize) -> SpriteRef {
+    let frame_list: Vec<Vec<Frame>> = vec![
+        // DATA1
+        build_frame_list(Orientation::Down, 7),
+        // DATA2
+        build_frame_list(Orientation::Right, 29),
+        // DATA3
+        build_frame_list(Orientation::Down, 0),
+        // DATA4
+        build_frame_list(Orientation::Down, 7),
+        // DATA5
+        build_frame_list(Orientation::Up, 9),
+        // DATA6
+        build_frame_list(Orientation::Left, 15),
+        // DATA7
+        build_frame_list(Orientation::Down, 0),
+        // DATA8
+        vec![Frame::new(FRAME_DATAU2), Frame::new(FRAME_DATAU2)],
+        // DATA9
+        build_frame_list(Orientation::Right, 8),
+        // DATA10
+        build_frame_list(Orientation::Down, 9),
+        // DATA11
+        build_frame_list(Orientation::Up, 3),
+        // DATA12
+        build_frame_list(Orientation::Up, 0),
+        // DATA13
+        build_frame_list(Orientation::Left, 40),
+        // DATA14
+        build_frame_list(Orientation::Up, 8),
+    ];
+    if !frame_list.len() < index {
+        panic!("No Data sprite with index {}", index);
+    }
 
+    let frames = frame_list[index - 1].clone();
     let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data4", 14);
+    let sprite = Sprite::new(
+        14 + index as u64,
+        format!("data{}", index),
+        10 + index as i32,
+    );
     sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data5() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAU1), Frame::new(FRAME_DATAU2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAU3)).take(9));
-    frames.extend([Frame::new(FRAME_DATAU4), Frame::new(FRAME_DATAU5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data5", 15);
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data6() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAL1), Frame::new(FRAME_DATAL2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAL3)).take(15));
-    frames.extend([Frame::new(FRAME_DATAL4), Frame::new(FRAME_DATAL5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(16, "data6", 16);
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data7() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAD1), Frame::new(FRAME_DATAD2)];
-    frames.extend([Frame::new(FRAME_DATAD4), Frame::new(FRAME_DATAD5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data3", 17);
-
-    sprite.borrow_mut().collider().set_active(true);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data8() -> SpriteRef {
-    let frames = vec![Frame::new(FRAME_DATAU2), Frame::new(FRAME_DATAU2)];
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data3", 18);
-
-    sprite.borrow_mut().collider().set_active(true);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data9() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAR1), Frame::new(FRAME_DATAR2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAR3)).take(8));
-    frames.extend([Frame::new(FRAME_DATAR4), Frame::new(FRAME_DATAR5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data9", 19);
-    sprite.borrow_mut().collider().set_active(true);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data10() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAD1), Frame::new(FRAME_DATAD2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAD3)).take(9));
-    frames.extend([Frame::new(FRAME_DATAD4), Frame::new(FRAME_DATAD5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data10", 20);
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data11() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAU1), Frame::new(FRAME_DATAU2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAU3)).take(3));
-    frames.extend([Frame::new(FRAME_DATAU4), Frame::new(FRAME_DATAU5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data11", 21);
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data12() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAU1), Frame::new(FRAME_DATAU2)];
-    frames.extend([Frame::new(FRAME_DATAU4), Frame::new(FRAME_DATAU5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data12", 22);
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data13() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAL1), Frame::new(FRAME_DATAL2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAL3)).take(40));
-    frames.extend([Frame::new(FRAME_DATAL4), Frame::new(FRAME_DATAL5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(16, "data13", 23);
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
-    sprite.borrow_mut().set_animation(anim);
-    sprite
-}
-
-pub fn get_sprite_data14() -> SpriteRef {
-    let mut frames = vec![Frame::new(FRAME_DATAU1), Frame::new(FRAME_DATAU2)];
-    frames.extend(std::iter::repeat(Frame::new(FRAME_DATAU3)).take(8));
-    frames.extend([Frame::new(FRAME_DATAU4), Frame::new(FRAME_DATAU5)]);
-
-    let anim = Animation::new_movement_based(frames, 0, false);
-    let sprite = Sprite::new(14, "data14", 24);
-    sprite.borrow_mut().collider().set_active(true);
-    //sprite.borrow_mut().set_collider(collider);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }

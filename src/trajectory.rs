@@ -367,7 +367,7 @@ mod tests {
         let end = Position::new(XTermPosition::Coord(10), YTermPosition::Coord(10));
 
         let trajectory = Trajectory::new_linear(start, end, 1);
-        let sprite = Sprite::new(1, "test", 10);
+        let sprite = Sprite::new(1, String::from("test"), 10);
         sprite.borrow_mut().set_trajectory(trajectory.clone());
         let anim = Animation::new_movement_based(
             vec![Frame::new("FAKEFRAME10"), Frame::new("FAKEFRAME11")],
@@ -377,7 +377,7 @@ mod tests {
         sprite.borrow_mut().set_animation(anim);
 
         let trajectory_relative = Trajectory::new_relative(sprite.clone(), Coord::new(4, 2));
-        let sprite_rel = Sprite::new(1, "test", 10);
+        let sprite_rel = Sprite::new(1, String::from("test"), 10);
         sprite_rel
             .borrow_mut()
             .set_trajectory(trajectory_relative.clone());

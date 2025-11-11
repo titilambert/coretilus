@@ -18,7 +18,7 @@ type SpriteAction = Box<dyn Fn(&SpriteRef)>;
 pub struct Sprite {
     id: Uuid,
     tdid: u64,
-    tdname: &'static str,
+    tdname: String,
     trajectory: Trajectory,
     animation: Animation,
     visible: bool,
@@ -30,7 +30,7 @@ pub struct Sprite {
 }
 
 impl Sprite {
-    pub fn new(tdid: u64, tdname: &'static str, layer: i32) -> SpriteRef {
+    pub fn new(tdid: u64, tdname: String, layer: i32) -> SpriteRef {
         let trajectory = Trajectory::new_none(
             Position::new(XTermPosition::Coord(0), YTermPosition::Coord(0)),
             Position::new(XTermPosition::Coord(0), YTermPosition::Coord(0)),
@@ -57,8 +57,8 @@ impl Sprite {
     pub fn tdid(&self) -> u64 {
         self.tdid
     }
-    pub fn tdname(&self) -> &'static str {
-        self.tdname
+    pub fn tdname(&self) -> String {
+        self.tdname.clone()
     }
 
     // State

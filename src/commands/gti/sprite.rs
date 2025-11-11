@@ -19,7 +19,7 @@ pub fn get_sprite_std() -> SpriteRef {
     let frames = vec![Frame::new(FRAME_STD1), Frame::new(FRAME_STD2)];
     let anim = Animation::new_movement_based(frames.clone(), 0, true);
 
-    let sprite = Sprite::new(9, "Golf GTI", 10);
+    let sprite = Sprite::new(9, String::from("Golf GTI"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -28,7 +28,7 @@ pub fn get_sprite_pull() -> SpriteRef {
     let frames = vec![Frame::new(FRAME_PULL1), Frame::new(FRAME_PULL2)];
     let anim = Animation::new_movement_based(frames.clone(), 0, true);
 
-    let sprite = Sprite::new(10, "Golf GTI pulled", 10);
+    let sprite = Sprite::new(10, String::from("Golf GTI pulled"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -37,7 +37,7 @@ pub fn get_sprite_push() -> SpriteRef {
     let frames = vec![Frame::new(FRAME_PUSH1), Frame::new(FRAME_PUSH2)];
     let anim = Animation::new_movement_based(frames.clone(), 0, true);
 
-    let sprite = Sprite::new(11, "Golf GTI pushed", 10);
+    let sprite = Sprite::new(11, String::from("Golf GTI pushed"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -50,7 +50,7 @@ pub fn get_sprite_tag() -> SpriteRef {
     ];
     let anim = Animation::new_tick_based(frames.clone(), 0, 20, 300, true);
 
-    let sprite = Sprite::new(12, "Golf GTI tagged", 10);
+    let sprite = Sprite::new(12, String::from("Golf GTI tagged"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -63,7 +63,7 @@ pub fn get_sprite_commit() -> SpriteRef {
     ];
     let anim = Animation::new_tick_based(frames.clone(), 0, 20, 300, true);
 
-    let sprite = Sprite::new(13, "Golf GTI commited", 10);
+    let sprite = Sprite::new(13, String::from("Golf GTI commited"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }

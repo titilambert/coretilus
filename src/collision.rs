@@ -199,7 +199,7 @@ mod tests {
     #[test]
     fn test_collision_not_detected() {
         let frames_a = Frame::new("ascii\nggg");
-        let sprite_a = Sprite::new(1, "test", 10);
+        let sprite_a = Sprite::new(1, String::from("test"), 10);
         let anim = Animation::new_static(frames_a);
         sprite_a.borrow_mut().set_animation(anim);
         let trajectory = Trajectory::new_stationary(
@@ -210,7 +210,7 @@ mod tests {
         sprite_a.borrow_mut().set_trajectory(trajectory);
         sprite_a.borrow_mut().compute_path(terminal_size);
         let frames_b = Frame::new("ascii");
-        let sprite_b = Sprite::new(1, "test", 10);
+        let sprite_b = Sprite::new(1, String::from("test"), 10);
         let anim = Animation::new_static(frames_b);
         sprite_b.borrow_mut().set_animation(anim);
 
@@ -230,7 +230,7 @@ mod tests {
     #[test]
     fn test_collision_detected() {
         let frames_a = Frame::new("ascii\nline2");
-        let sprite_a = Sprite::new(1, "test", 10);
+        let sprite_a = Sprite::new(1, String::from("test"), 10);
         let anim = Animation::new_static(frames_a);
         sprite_a.clone().borrow_mut().set_animation(anim);
         let trajectory = Trajectory::new_stationary(
@@ -241,7 +241,7 @@ mod tests {
         sprite_a.borrow_mut().set_trajectory(trajectory);
         sprite_a.borrow_mut().compute_path(terminal_size);
         let frames_b = Frame::new("ascii");
-        let sprite_b = Sprite::new(1, "test", 10);
+        let sprite_b = Sprite::new(1, String::from("test"), 10);
         let anim = Animation::new_static(frames_b);
         sprite_b.clone().borrow_mut().set_animation(anim);
 
@@ -273,7 +273,7 @@ mod tests {
     #[should_panic(expected = "Same sprite twice used in the collision handler")]
     fn test_collision_same_sprite_panics() {
         let frames_a = Frame::new("ascii\nline2");
-        let sprite_a = Sprite::new(1, "test", 10);
+        let sprite_a = Sprite::new(1, String::from("test"), 10);
         let anim = Animation::new_static(frames_a);
         sprite_a.borrow_mut().set_animation(anim);
 

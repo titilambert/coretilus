@@ -41,7 +41,7 @@ pub fn get_sprite_d51() -> SpriteRef {
     ];
     let anim = Animation::new_movement_based(frames.clone(), 0, true);
 
-    let sprite = Sprite::new(1, "Steam locomotive D51", 10);
+    let sprite = Sprite::new(1, String::from("Steam locomotive D51"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -57,7 +57,7 @@ pub fn get_sprite_logo() -> SpriteRef {
     ];
 
     let anim = Animation::new_movement_based(frames.clone(), 0, true);
-    let sprite = Sprite::new(2, "Steam locomotive Logo", 10);
+    let sprite = Sprite::new(2, String::from("Steam locomotive Logo"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -73,7 +73,7 @@ pub fn get_sprite_c51() -> SpriteRef {
     ];
 
     let anim = Animation::new_movement_based(frames.clone(), 0, true);
-    let sprite = Sprite::new(3, "Steam locomotive C51", 10);
+    let sprite = Sprite::new(3, String::from("Steam locomotive C51"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -87,7 +87,7 @@ pub fn get_sprite_smoke() -> SpriteRef {
     ];
 
     let anim = Animation::new_tick_based(frames.clone(), 0, 20, 0, true);
-    let sprite = Sprite::new(4, "Smoke", 10);
+    let sprite = Sprite::new(4, String::from("Smoke"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -101,28 +101,28 @@ pub fn get_sprite_accident(start_frame_id: usize) -> SpriteRef {
     ];
 
     let anim = Animation::new_tick_based(frames.clone(), start_frame_id, 50, 0, true);
-    let sprite = Sprite::new(5, "Accident", 15);
+    let sprite = Sprite::new(5, String::from("Accident"), 15);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
 
 pub fn get_sprite_coal() -> SpriteRef {
     let anim = Animation::new_static(Frame::new(FRAME_COAL));
-    let sprite = Sprite::new(6, "Coal", 12);
+    let sprite = Sprite::new(6, String::from("Coal"), 12);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
 
 pub fn get_sprite_logo_coal() -> SpriteRef {
     let anim = Animation::new_static(Frame::new(FRAME_LOGO_COAL));
-    let sprite = Sprite::new(7, "Little coal", 12);
+    let sprite = Sprite::new(7, String::from("Little coal"), 12);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
 
 pub fn get_sprite_logo_car() -> SpriteRef {
     let anim = Animation::new_static(Frame::new(FRAME_LOGO_CAR));
-    let sprite = Sprite::new(8, "Litte car", 13);
+    let sprite = Sprite::new(8, String::from("Little car"), 13);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
