@@ -127,3 +127,8 @@ do
 docker run --rm -v `pwd`/gifs:/vhs/output -v `pwd`/src:/src:ro -v `pwd`/target/release:/usr/local/bin ghcr.io/charmbracelet/vhs /src/commands/${COMMAND}/${COMMAND}.tape
 done
 ```
+### Optimize gifs is needed
+
+```
+gifsicle -O3 --colors 256 <heavy_gif>gif -o <light_gif>.gif
+```

@@ -28,10 +28,10 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="0.78840751"
-     inkscape:cx="591.69908"
-     inkscape:cy="367.19589"
-     inkscape:window-width="1916"
-     inkscape:window-height="1143"
+     inkscape:cx="592.33327"
+     inkscape:cy="366.5617"
+     inkscape:window-width="1920"
+     inkscape:window-height="1200"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -260,15 +260,9 @@
          id="use39" />
     </mask>
   </g>
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:515.915px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#c04828;fill-opacity:1;stroke-width:6.05538"
-     x="485.20032"
-     y="489.91437"
-     id="text39"><tspan
-       sodipodi:role="line"
-       id="tspan39"
-       x="485.20032"
-       y="489.91437"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:515.915px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#c04828;fill-opacity:1;stroke-width:6.05538">T</tspan></text>
+  <path
+     d="M 677.15696,207.52145 V 489.91437 H 602.84304 V 207.52145 H 500.56693 v -57.43584 h 278.86615 v 57.43584 z"
+     id="text39"
+     style="font-weight:bold;font-size:515.915px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, Bold';fill:#c04828;stroke-width:6.05538"
+     aria-label="T" />
 </svg>

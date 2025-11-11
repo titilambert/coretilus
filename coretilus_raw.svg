@@ -25,10 +25,10 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="3.3832408"
-     inkscape:cx="-77.736116"
-     inkscape:cy="95.175017"
-     inkscape:window-width="1920"
-     inkscape:window-height="1200"
+     inkscape:cx="-77.588329"
+     inkscape:cy="95.02723"
+     inkscape:window-width="1916"
+     inkscape:window-height="1143"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -254,9 +254,15 @@
          id="use39" />
     </mask>
   </g>
-  <path
-     d="M 59.14583,34.395843 V 81.104156 H 46.854169 V 34.395843 H 29.937509 V 24.895847 H 76.06249 v 9.499996 z"
-     id="text39"
-     style="font-weight:bold;font-size:85.3333px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, Bold';fill:#c04828;stroke-width:1.00157"
-     aria-label="T" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:85.3333px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#c04828;fill-opacity:1;stroke-width:1.00157"
+     x="27.395844"
+     y="81.104156"
+     id="text39"><tspan
+       sodipodi:role="line"
+       id="tspan39"
+       x="27.395844"
+       y="81.104156"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:85.3333px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#c04828;fill-opacity:1">T</tspan></text>
 </svg>
