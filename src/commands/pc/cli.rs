@@ -470,15 +470,17 @@ impl Command for Pc {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::commands::gti::cli::Gti;
+    use crate::commands::pc::cli::Pc;
 
     #[test]
     fn test_select_data1() {
-        let mut gti = Gti {};
+        let mut pc = Pc {};
         let args: Vec<String> = vec![String::from("pc")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
+        let (sprites, collisions) = pc.select_sprites(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 2);
-        assert_eq!(collisions.len(), 0);
+        assert_eq!(sprites.len(), 19);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 0);
+        assert_eq!(sprites[5].borrow_mut().trajectory().speed(), 17);
+        assert_eq!(collisions.len(), 11);
     }
 }
