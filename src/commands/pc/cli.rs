@@ -52,7 +52,7 @@ impl Command for Pc {
         let params: &[&str] = &[];
         let (_, _) = parse_args(args.collect(), short_flags, long_flags, params);
         let mut sprites: Vec<SpriteRef> = Vec::new();
-        let speed: usize = 12;
+        let speed: usize = 17;
 
         // Motherboard
         let motherboard_sprite = create_sprite(

@@ -84,9 +84,6 @@ impl Sprite {
 
     // Go to the next tick
     pub fn advance(&mut self, tick_id: usize, terminal_size: Size) {
-        if self.tdid() == 16 {
-            print!("FFF");
-        }
         let new_coord = self.get_coordinate(tick_id);
         let next_coord = self.get_coordinate(tick_id + 1);
         self.trajectory.advance(tick_id, terminal_size, self.size());
