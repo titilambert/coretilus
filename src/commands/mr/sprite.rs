@@ -37,11 +37,11 @@ pub fn get_sprite_mini() -> SpriteRef {
 
     let collider = Collider::new(
         Coord::new(-1, 2),
-        Size::new(frames[0].get_width(), frames[0].get_height() - 2),
+        Size::new(frames[0].get_width() + 1, frames[0].get_height() - 2),
         true,
     );
     let anim = Animation::new_movement_based(frames.clone(), 0, true);
-    let sprite = Sprite::new(14, "Rocket mini", 10);
+    let sprite = Sprite::new(14, String::from("Rocket mini"), 10);
     sprite.borrow_mut().set_collider(collider);
     sprite.borrow_mut().set_animation(anim);
     sprite
@@ -50,7 +50,7 @@ pub fn get_sprite_mini() -> SpriteRef {
 pub fn get_sprite_mini_landed() -> SpriteRef {
     let frames = vec![Frame::new(FRAME_MINI1)];
     let anim = Animation::new_tick_based(frames.clone(), 0, 1, 50, true);
-    let sprite = Sprite::new(15, "Landed Rocket mini", 10);
+    let sprite = Sprite::new(15, String::from("Landed Rocket mini"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -63,11 +63,11 @@ pub fn get_sprite_std() -> SpriteRef {
     ];
     let collider = Collider::new(
         Coord::new(-1, 2),
-        Size::new(frames[0].get_width(), frames[0].get_height() - 2),
+        Size::new(frames[0].get_width() + 1, frames[0].get_height() - 2),
         true,
     );
     let anim = Animation::new_movement_based(frames.clone(), 0, true);
-    let sprite = Sprite::new(16, "Rocket", 10);
+    let sprite = Sprite::new(16, String::from("Rocket"), 10);
     sprite.borrow_mut().set_collider(collider);
     sprite.borrow_mut().set_animation(anim);
     sprite
@@ -76,7 +76,7 @@ pub fn get_sprite_std() -> SpriteRef {
 pub fn get_sprite_std_landed() -> SpriteRef {
     let frames = vec![Frame::new(FRAME_STD1)];
     let anim = Animation::new_tick_based(frames.clone(), 0, 1, 50, true);
-    let sprite = Sprite::new(17, "Landed Rocket", 10);
+    let sprite = Sprite::new(17, String::from("Landed Rocket"), 10);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -84,7 +84,7 @@ pub fn get_sprite_std_landed() -> SpriteRef {
 pub fn get_sprite_spaceport() -> SpriteRef {
     let anim = Animation::new_static(Frame::new(FRAME_SPACEPORT));
 
-    let sprite = Sprite::new(18, "Spaceport", 0);
+    let sprite = Sprite::new(18, String::from("Spaceport"), 0);
     sprite.borrow_mut().collider().set_active(true);
     sprite.borrow_mut().set_animation(anim);
     sprite
@@ -105,7 +105,7 @@ pub fn get_sprite_explosion() -> SpriteRef {
     ];
     let anim = Animation::new_tick_based(frames.clone(), 0, 20, 0, false);
 
-    let sprite = Sprite::new(19, "Explosion", 1);
+    let sprite = Sprite::new(19, String::from("Explosion"), 1);
     sprite.borrow_mut().set_visible(false);
     sprite.borrow_mut().set_animation(anim);
     sprite
@@ -114,7 +114,7 @@ pub fn get_sprite_explosion() -> SpriteRef {
 pub fn get_sprite_sign_land() -> SpriteRef {
     let anim = Animation::new_static(Frame::new(FRAME_SIGN_LAND));
 
-    let sprite = Sprite::new(20, "Land rocket sign", 0);
+    let sprite = Sprite::new(20, String::from("Land rocket sign"), 0);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }
@@ -123,7 +123,7 @@ pub fn get_sprite_sign_success() -> SpriteRef {
     let frames = vec![Frame::new(FRAME_SIGN_SUCCESS)];
     let anim = Animation::new_tick_based(frames.clone(), 0, 1, 200, true);
 
-    let sprite = Sprite::new(21, "Landed rocket sign", 0);
+    let sprite = Sprite::new(21, String::from("Landed rocket sign"), 0);
 
     sprite.borrow_mut().set_animation(anim);
     sprite
@@ -132,7 +132,7 @@ pub fn get_sprite_sign_success() -> SpriteRef {
 pub fn get_sprite_sign_fail() -> SpriteRef {
     let anim = Animation::new_static(Frame::new(FRAME_SIGN_FAILED));
 
-    let sprite = Sprite::new(22, "Rocket crashed sign", 0);
+    let sprite = Sprite::new(22, String::from("Rocket crashed sign"), 0);
 
     sprite.borrow_mut().set_animation(anim);
     sprite
@@ -141,7 +141,7 @@ pub fn get_sprite_sign_fail() -> SpriteRef {
 pub fn get_sprite_sign_tryagain() -> SpriteRef {
     let anim = Animation::new_static(Frame::new(FRAME_SIGN_TRYAGAIN));
 
-    let sprite = Sprite::new(23, "Rocket crashed try again sign", 0);
+    let sprite = Sprite::new(23, String::from("Rocket crashed try again sign"), 0);
     sprite.borrow_mut().set_animation(anim);
     sprite
 }

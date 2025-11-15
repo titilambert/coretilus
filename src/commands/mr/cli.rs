@@ -59,13 +59,13 @@ impl Command for Mr {
         );
         land_sign_sprite
             .borrow_mut()
-            .set_movement(sign_position.clone());
+            .set_trajectory(sign_position.clone());
         sprite_list.push(land_sign_sprite.clone());
         // Success sign
         let success_sign_sprite = get_sprite_sign_success();
         success_sign_sprite
             .borrow_mut()
-            .set_movement(end_sign_position.clone());
+            .set_trajectory(end_sign_position.clone());
         success_sign_sprite.borrow_mut().set_visible(false);
         sprite_list.push(success_sign_sprite.clone());
         // Failed sign
@@ -73,14 +73,14 @@ impl Command for Mr {
         failed_sign_sprite.borrow_mut().set_visible(false);
         failed_sign_sprite
             .borrow_mut()
-            .set_movement(end_sign_position.clone());
+            .set_trajectory(end_sign_position.clone());
         sprite_list.push(failed_sign_sprite.clone());
         // Try again sign
         let tryagain_sign_sprite = get_sprite_sign_tryagain();
         tryagain_sign_sprite.borrow_mut().set_visible(false);
         tryagain_sign_sprite
             .borrow_mut()
-            .set_movement(end_sign_position.clone());
+            .set_trajectory(end_sign_position.clone());
         sprite_list.push(tryagain_sign_sprite.clone());
 
         // Landed Rocket
@@ -99,23 +99,23 @@ impl Command for Mr {
 
         // Rocket control
         Sprite::on_key(&rocket_sprite, KeyCode::Char('d'), |s| {
-            s.borrow_mut().movement().add_offset(Coord::new(1, 0))
+            s.borrow_mut().trajectory().add_offset(Coord::new(1, 0))
         });
         Sprite::on_key(&rocket_sprite, KeyCode::Right, |s| {
-            s.borrow_mut().movement().add_offset(Coord::new(1, 0))
+            s.borrow_mut().trajectory().add_offset(Coord::new(1, 0))
         });
         Sprite::on_key(&rocket_sprite, KeyCode::Char('a'), |s| {
-            s.borrow_mut().movement().add_offset(Coord::new(-1, 0));
+            s.borrow_mut().trajectory().add_offset(Coord::new(-1, 0));
         });
         Sprite::on_key(&rocket_sprite, KeyCode::Left, |s| {
-            s.borrow_mut().movement().add_offset(Coord::new(-1, 0))
+            s.borrow_mut().trajectory().add_offset(Coord::new(-1, 0))
         });
-        let movement = Trajectory::new_linear(
+        let trajectory = Trajectory::new_linear(
             Position::new(XTermPosition::Middle, YTermPosition::TopOut),
             Position::new(XTermPosition::Middle, YTermPosition::Coord(-2)),
             20,
         );
-        rocket_sprite.borrow_mut().set_movement(movement);
+        rocket_sprite.borrow_mut().set_trajectory(trajectory);
         sprite_list.push(rocket_sprite.clone());
         // Space port
         let spaceport_sprite = get_sprite_spaceport();
@@ -131,7 +131,7 @@ impl Command for Mr {
         );
         spaceport_sprite
             .borrow_mut()
-            .set_movement(spaceport_position);
+            .set_trajectory(spaceport_position);
         sprite_list.push(spaceport_sprite.clone());
 
         // Explosion
@@ -158,7 +158,7 @@ impl Command for Mr {
                 );
                 landed_rocket_sprite
                     .borrow_mut()
-                    .set_movement(rocket_landed_traj);
+                    .set_trajectory(rocket_landed_traj);
                 landed_rocket_sprite.borrow_mut().set_visible(true);
                 success_sign_sprite.borrow_mut().set_visible(true);
                 *landed_clone.borrow_mut() = true;
@@ -172,7 +172,7 @@ impl Command for Mr {
             ScreenEdge::Bottom,
             move |rocket_sprite, _, _| {
                 rocket_sprite.borrow_mut().set_visible(false);
-                let rocket_coord = rocket_sprite.borrow_mut().movement().current_coordinate();
+                let rocket_coord = rocket_sprite.borrow_mut().trajectory().current_coordinate();
                 let explosion_position = Trajectory::new_stationary(
                     Position::new(
                         XTermPosition::Coord(
@@ -187,7 +187,7 @@ impl Command for Mr {
                 );
                 sprite_explosion
                     .borrow_mut()
-                    .set_movement(explosion_position);
+                    .set_trajectory(explosion_position);
                 sprite_explosion.borrow_mut().set_visible(true);
                 if is_recursive {
                     tryagain_sign_sprite.borrow_mut().set_visible(true);
@@ -231,7 +231,7 @@ mod tests {
         let (sprites, collisions) = mr.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 8);
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 0);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 0);
         assert_eq!(sprites[4].borrow_mut().tdid(), 15);
         assert_eq!(sprites[5].borrow_mut().tdid(), 14);
         assert_eq!(collisions.len(), 2);
@@ -246,7 +246,7 @@ mod tests {
         let (sprites, collisions) = mr.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 8);
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 0);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 0);
         assert_eq!(sprites[4].borrow_mut().tdid(), 17);
         assert_eq!(sprites[5].borrow_mut().tdid(), 16);
         assert_eq!(collisions.len(), 2);
@@ -261,7 +261,7 @@ mod tests {
         let (sprites, collisions) = mr.select_sprites(args.into_iter());
 
         assert_eq!(sprites.len(), 8);
-        assert_eq!(sprites[0].borrow_mut().movement().speed(), 0);
+        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 0);
         assert_eq!(sprites[3].borrow_mut().tdid(), 23);
         assert_eq!(collisions.len(), 2);
     }
