@@ -29,7 +29,7 @@ Each binary is intentionally useless, funny, or just delightfully absurd.
 |----------|--------------|--------------|-------------|
 | `sl`     | `ls`         | ✅ - DONE    | The legendary Steam Locomotive.<br>Rust port of https://github.com/mtoyoda/sl |
 | `gti`    | `git`        | ✅ - DONE    | “Start your engine!” before committing.<br>Rust port of https://github.com/rwos/gti |
-| `pc`     | `cp`         | ✅ - DONE    | Copy file from Floppy to IDE using a 486 CPU. |
+| `pc`     | `cp`         | ✅ - DONE    | Self-duplicating floppy-to-HDD utility for Intel 486 |
 | `mr`     | `rm`         | 🕓 - PLANNED | Land the rocket without crashing it. |
 | `grpe`   | `grep`       | 🕓 - PLANNED | Searches nothing and finds everything. |
 | `dog`    | `dig`        | 🕓 - PLANNED | Dogs can dig. |
