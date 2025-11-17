@@ -1,3 +1,4 @@
+pub mod dog;
 pub mod gti;
 pub mod mr;
 pub mod pc;
