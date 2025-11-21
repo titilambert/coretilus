@@ -5,6 +5,7 @@ use crate::{engine::RenderEngine, sprite::SpriteRef};
 
 pub fn process_collisions(engine: &mut RenderEngine, collisions: &mut [Collision]) {
     for col in collisions.iter_mut() {
+        //if col.is_active() && col.is_colliding(engine.terminal_size()) {
         if col.is_colliding(engine.terminal_size()) {
             col.trigger(engine);
         }
@@ -63,12 +64,14 @@ pub enum Collision {
         b: SpriteRef,
         counter: usize,
         callback: SpriteCollisionCallback,
+        is_precise: bool,
     },
     Edge {
         a: SpriteRef,
         b: ScreenEdge,
         counter: usize,
         callback: EdgeCollisionCallback,
+        is_precise: bool,
     },
 }
 
@@ -83,6 +86,7 @@ impl Collision {
             b,
             counter: 0,
             callback: Box::new(callback),
+            is_precise: true,
         }
     }
 
@@ -96,8 +100,25 @@ impl Collision {
             b,
             counter: 0,
             callback: Box::new(callback),
+            is_precise: false,
         }
     }
+
+    /*
+    pub fn is_active(&self) -> bool {
+        match self {
+            Collision::Sprite { is_active, .. } => *is_active,
+            Collision::Edge { is_active, .. } => *is_active,
+        }
+    }
+
+    pub fn set_active(&mut self, state: bool) {
+        match self {
+            Collision::Sprite { is_active, .. } => *is_active = state,
+            Collision::Edge { is_active, .. } => *is_active = state,
+        };
+    }
+    */
 
     pub fn counter(&self) -> usize {
         match self {
@@ -108,22 +129,81 @@ impl Collision {
 
     pub fn is_colliding(&mut self, terminal_size: Size) -> bool {
         match self {
-            Collision::Sprite { a, b, counter, .. } => {
+            Collision::Sprite {
+                a,
+                b,
+                counter,
+                is_precise,
+                ..
+            } => {
                 if Rc::ptr_eq(a, b) {
                     panic!("Same sprite twice used in the collision handler");
                 }
+                /*
                 if !(a.borrow_mut().collider().is_active() && b.borrow_mut().collider().is_active())
                 {
                     return false;
-                }
-                let (a_coord, a_collider) = {
+                }*/
+                let (a_coord, a_collider, a_frame) = {
                     let mut a = a.borrow_mut();
-                    (a.current_coordinate(), *a.collider())
+                    (a.current_coordinate(), *a.collider(), a.current_frame())
                 };
-                let (b_coord, b_collider) = {
+                let (b_coord, b_collider, b_frame) = {
                     let mut b = b.borrow_mut();
-                    (b.current_coordinate(), *b.collider())
+                    (b.current_coordinate(), *b.collider(), b.current_frame())
                 };
+
+                if *is_precise {
+                    let mut a_filled_coords: Vec<Coord> = vec![];
+                    let mut a_y = 0;
+                    let mut a_x = 0;
+                    for c in a_frame.content().chars() {
+                        a_x += 1;
+                        if c.to_string() == "\n" {
+                            a_y += 1;
+                            a_x = 0;
+                        } else if c.to_string() != " " {
+                            let new_coord = Coord::new(
+                                a_x + a_coord.x(),
+                                a_coord.y() + a_frame.get_height() as i32 - a_y,
+                            );
+                            a_filled_coords.push(new_coord);
+                        }
+                    }
+
+                    let mut b_filled_coords: Vec<Coord> = vec![];
+                    let mut b_y = 0;
+                    let mut b_x = 0;
+                    for c in b_frame.content().chars() {
+                        b_x += 1;
+                        if c.to_string() == "\n" {
+                            b_y += 1;
+                            b_x = 0;
+                        } else if c.to_string() != " " {
+                            let new_coord = Coord::new(
+                                b_x + b_coord.x(),
+                                b_coord.y() + b_frame.get_height() as i32 - b_y,
+                            );
+                            b_filled_coords.push(new_coord);
+                        }
+                    }
+                    let mut has_common = false;
+                    for a_coord in &a_filled_coords {
+                        for b_coord in &b_filled_coords {
+                            if a_coord.x() == b_coord.x() && a_coord.y() == b_coord.y() {
+                                has_common = true;
+                                break;
+                            }
+                        }
+                        if has_common {
+                            break;
+                        }
+                    }
+
+                    println!("{}", a.borrow().is_visible());
+                    println!("{}", b.borrow().is_visible());
+                    return has_common;
+                }
                 let a_min = a_collider.min(a_coord);
                 let b_min = b_collider.min(b_coord);
                 let a_max = a_collider.max(a_coord);
@@ -173,13 +253,18 @@ impl Collision {
                 b,
                 counter,
                 callback,
-            } => (callback)(a, b, *counter, engine),
+                ..
+            } => {
+                (callback)(a, b, *counter, engine);
+            }
             Collision::Edge {
                 a,
                 counter,
                 callback,
                 ..
-            } => (callback)(a, *counter, engine),
+            } => {
+                (callback)(a, *counter, engine);
+            }
         }
     }
 }
