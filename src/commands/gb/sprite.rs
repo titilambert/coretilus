@@ -2,7 +2,7 @@ use crate::animation::Animation;
 use crate::frame::Frame;
 use crate::sprite::{Sprite, SpriteRef};
 
-const FRAME_GAMEBOY: &str = include_str!("frames/gameboy.adoc");
+const FRAME_GAMEBOY: &str = include_str!("frames/gb.adoc");
 const FRAME_SHAPE1: &str = include_str!("frames/shape_1.adoc");
 const FRAME_SHAPE2: &str = include_str!("frames/shape_2.adoc");
 const FRAME_SHAPE3: &str = include_str!("frames/shape_3.adoc");
