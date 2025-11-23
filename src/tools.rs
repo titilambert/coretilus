@@ -1,5 +1,18 @@
 use regex::Regex;
 use std::collections::HashSet;
+use terminal_size::{Height, Width, terminal_size};
+
+use crate::engine_v2::size::Size;
+
+pub fn get_terminal_size() -> Size {
+    match terminal_size() {
+        Some((Width(w), Height(h))) => Size::new(w as u32, h as u32),
+        None => {
+            // No terminal (CI, pre-commit, etc.)
+            Size::new(100, 50) // default dimensions
+        }
+    }
+}
 
 /// Parses command line arguments to detect which flags and parameters were passed.
 ///

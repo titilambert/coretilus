@@ -11,6 +11,7 @@ pub mod command;
 pub mod commands;
 pub mod coord;
 pub mod engine;
+pub mod engine_v2;
 pub mod frame;
 pub mod sprite;
 pub mod tools;
