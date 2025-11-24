@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 /// A single frame of an animation, containing ASCII art and the number of ticks to display it.
 ///
 /// The `ascii` field holds the ASCII art string, and `ticks` determines how many animation
@@ -16,7 +18,7 @@
 /// ```
 #[derive(Clone)]
 pub struct Frame {
-    ascii: &'static str,
+    ascii: Cow<'static, str>,
     // Number of ticks to keep this frame showed
     // Zero means use default from Animation
     ticks: usize,
@@ -24,18 +26,30 @@ pub struct Frame {
 
 impl Frame {
     /// Creates a new `Frame` with the specified ASCII art and a default tick count of 0.
-    pub fn new(ascii: &'static str) -> Self {
-        Self { ascii, ticks: 0 }
+    pub fn new<S>(ascii: S) -> Self
+    where
+        S: Into<Cow<'static, str>>,
+    {
+        Self {
+            ascii: ascii.into(),
+            ticks: 0,
+        }
     }
 
     /// Creates a new `Frame` with the specified ASCII art and the number of ticks that this frame should be displayed for.
-    pub fn new_ticks(ascii: &'static str, ticks: usize) -> Self {
-        Self { ascii, ticks }
+    pub fn new_ticks<S>(ascii: S, ticks: usize) -> Self
+    where
+        S: Into<Cow<'static, str>>,
+    {
+        Self {
+            ascii: ascii.into(),
+            ticks,
+        }
     }
 
     /// Returns a reference to the ASCII art content of the frame.
     pub fn content(&self) -> &str {
-        self.ascii
+        &self.ascii
     }
 
     /// Returns the number of ticks that this frame should be displayed for.

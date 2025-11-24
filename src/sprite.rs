@@ -78,6 +78,7 @@ impl Sprite {
                 self.animation.is_done()
             }
             Direction::Relative => self.trajectory.is_done(),
+            Direction::Circular => self.trajectory.is_done(),
             _ => self.animation.is_done(),
         }
     }
