@@ -127,6 +127,10 @@ impl Trajectory {
         self.offset = self.offset + coord;
     }
 
+    pub fn reset_offset(&mut self) {
+        self.offset = Coord::new(0, 0);
+    }
+
     pub fn offset(&self) -> Coord {
         self.offset
     }
@@ -140,7 +144,13 @@ impl Trajectory {
     }
 
     pub fn is_done(&self) -> bool {
-        self.is_done
+        print!(
+            "FFFFFFFFFF {} {} {}\n",
+            self.is_done,
+            self.has_started(),
+            self.is_done && self.has_started()
+        );
+        self.is_done && self.has_started()
     }
 
     pub fn path(&self) -> Vec<Coord> {
@@ -154,6 +164,13 @@ impl Trajectory {
     pub fn started_tick(&self) -> Option<usize> {
         self.started_tick_id
     }
+
+    /*
+    pub fn stop(&mut self) {
+        self.is_done = true;
+        self.path = vec![self.path[self.current_coordinate_id]];
+        //panic!("GGGGG {:#?}", self.path);
+    }*/
 
     pub fn advance(&mut self, tick_id: usize, terminal_size: Size, sprite_size: Size) {
         if !self.has_started() {
