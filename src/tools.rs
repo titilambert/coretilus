@@ -1,6 +1,8 @@
 use regex::Regex;
 use std::collections::HashSet;
-use terminal_size::{Height, Width, terminal_size};
+use terminal_size::Height;
+use terminal_size::Width;
+use terminal_size::terminal_size;
 
 use crate::engine_v2::size::Size;
 

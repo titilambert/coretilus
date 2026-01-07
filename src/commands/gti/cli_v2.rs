@@ -1,14 +1,20 @@
-use crate::collision::Collision;
-use crate::commands::gti::objects::{
-    get_object_commit, get_object_pull, get_object_push, get_object_std, get_object_tag,
-};
+//use crate::collision::Collision;
+use crate::commands::gti::objects::get_object_commit;
+use crate::commands::gti::objects::get_object_pull;
+use crate::commands::gti::objects::get_object_push;
+use crate::commands::gti::objects::get_object_std;
+use crate::commands::gti::objects::get_object_tag;
+use crate::engine_v2::collision::Collision;
+use crate::engine_v2::collision::ScreenEdge;
 use crate::engine_v2::engine::Engine;
-use crate::engine_v2::object::movement::Movement;
-use crate::engine_v2::object::object::ObjectRef;
-use crate::engine_v2::position::{Position, XTermPosition, YTermPosition};
+use crate::engine_v2::entity::movement::Movement;
+use crate::engine_v2::entity::object::ObjectRef;
+use crate::engine_v2::position::Position;
+use crate::engine_v2::position::XTermPosition;
+use crate::engine_v2::position::YTermPosition;
 use crate::tools::parse_args;
 
-use crate::command::{Command, CommandV2};
+use crate::command::CommandV2;
 
 pub struct Gti {}
 
@@ -49,6 +55,7 @@ impl CommandV2 for Gti {
             is_loop = true;
         }
 
+        let mut collisions: Vec<Collision> = Vec::new();
         let mut objects: Vec<ObjectRef> = Vec::new();
         if is_loop {
             let trajectory = Movement::new_stationary(
@@ -64,72 +71,80 @@ impl CommandV2 for Gti {
                 speed,
             );
             object.borrow_mut().set_movement(movement);
+            let collision = Collision::new_edge(
+                object.clone(),
+                ScreenEdge::RightWithObjectLeftSide,
+                move |_, _, engine| {
+                    engine.stop();
+                },
+            );
+            collisions.push(collision);
             objects.push(object);
         }
-        let collisions: Vec<Collision> = Vec::new();
         (objects, collisions)
     }
     fn execute(&mut self) {
-        let (mut objects, _) = self.select_objects(std::env::args());
-        let mut engine = Engine::new(&mut objects, 300);
+        let (mut objects, collisions) = self.select_objects(std::env::args());
+        let mut engine = Engine::new(&mut objects, collisions, 3000);
         engine.run();
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::commands::gti::cli::Gti;
+    //use super::*;
+    use crate::command::CommandV2;
+    use crate::commands::gti::cli_v2::Gti;
 
     #[test]
     fn test_select_sprite_std() {
         let mut gti = Gti {};
         let args: Vec<String> = vec![String::from("gti")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
+        let (objects, collisions) = gti.select_objects(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 2);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 9);
-        assert_eq!(collisions.len(), 0);
+        assert_eq!(objects[0].borrow().movement().speed(), 2);
+        assert_eq!(objects[0].borrow().tdid(), 9);
+        assert_eq!(collisions.len(), 1);
     }
     #[test]
     fn test_select_sprite_push() {
         let mut gti = Gti {};
         let args: Vec<String> = vec![String::from("gti"), String::from("push")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
+        let (objects, collisions) = gti.select_objects(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 8);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 11);
-        assert_eq!(collisions.len(), 0);
+        assert_eq!(objects[0].borrow_mut().movement().speed(), 10);
+        assert_eq!(objects[0].borrow_mut().tdid(), 11);
+        assert_eq!(collisions.len(), 1);
     }
     #[test]
     fn test_select_sprite_pull() {
         let mut gti = Gti {};
         let args: Vec<String> = vec![String::from("gti"), String::from("pull")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
+        let (objects, collisions) = gti.select_objects(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 5);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 10);
-        assert_eq!(collisions.len(), 0);
+        assert_eq!(objects[0].borrow_mut().movement().speed(), 5);
+        assert_eq!(objects[0].borrow_mut().tdid(), 10);
+        assert_eq!(collisions.len(), 1);
     }
 
     #[test]
     fn test_select_sprite_commit() {
         let mut gti = Gti {};
         let args: Vec<String> = vec![String::from("gti"), String::from("commit")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
+        let (objects, collisions) = gti.select_objects(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 0);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 13);
+        assert_eq!(objects[0].borrow_mut().movement().speed(), 0);
+        assert_eq!(objects[0].borrow_mut().tdid(), 13);
         assert_eq!(collisions.len(), 0);
     }
     #[test]
     fn test_select_sprite_tag() {
         let mut gti = Gti {};
         let args: Vec<String> = vec![String::from("gti"), String::from("tag")];
-        let (sprites, collisions) = gti.select_sprites(args.into_iter());
+        let (objects, collisions) = gti.select_objects(args.into_iter());
 
-        assert_eq!(sprites[0].borrow_mut().trajectory().speed(), 0);
-        assert_eq!(sprites[0].borrow_mut().tdid(), 12);
+        assert_eq!(objects[0].borrow_mut().movement().speed(), 0);
+        assert_eq!(objects[0].borrow_mut().tdid(), 12);
         assert_eq!(collisions.len(), 0);
     }
 }

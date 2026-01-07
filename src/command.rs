@@ -1,4 +1,7 @@
-use crate::{collision::Collision, engine_v2::object::object::ObjectRef, sprite::SpriteRef};
+use crate::collision::Collision as CollisionV1;
+use crate::engine_v2::collision::Collision;
+use crate::engine_v2::entity::object::ObjectRef;
+use crate::sprite::SpriteRef;
 use std::any::type_name;
 
 #[cfg(unix)]
@@ -24,7 +27,7 @@ pub trait Command {
     fn select_sprites(
         &mut self,
         args: impl Iterator<Item = String>,
-    ) -> (Vec<SpriteRef>, Vec<Collision>);
+    ) -> (Vec<SpriteRef>, Vec<CollisionV1>);
 }
 
 pub trait CommandV2 {

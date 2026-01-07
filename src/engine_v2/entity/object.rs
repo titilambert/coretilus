@@ -1,13 +1,16 @@
-use std::{cell::RefCell, collections::HashMap, os::unix::raw::uid_t, rc::Rc};
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::rc::Rc;
 
 use crossterm::event::KeyCode;
 use uuid::Uuid;
 
-use crate::engine_v2::{
-    coords::Coords,
-    object::{frame::Frame, movement::Movement, sprite::Sprite},
-    size::Size,
-};
+use crate::engine_v2::collision::Collider;
+use crate::engine_v2::coords::Coords;
+use crate::engine_v2::entity::frame::Frame;
+use crate::engine_v2::entity::movement::Movement;
+use crate::engine_v2::entity::sprite::Sprite;
+use crate::engine_v2::size::Size;
 
 pub type ObjectRef = Rc<RefCell<Object>>;
 type ObjectAction = Box<dyn Fn(&ObjectRef)>;
@@ -23,11 +26,11 @@ pub struct Object {
     active_sprite: usize,
     coords: Coords,
     coords_history: Vec<Coords>,
-    visible: bool,
+    //visible: bool,
     // map key -> action
     pub input_actions: HashMap<KeyCode, ObjectAction>,
     // collider
-    //collider: Collider,
+    collider: Collider,
 }
 
 impl Object {
@@ -38,6 +41,7 @@ impl Object {
             Direction::None,
         );*/
         let id = Uuid::new_v4();
+        let size = sprites[0].size();
         Rc::new(RefCell::new(Self {
             id,
             tdid,
@@ -49,9 +53,9 @@ impl Object {
             //animation: Animation::new_static(Frame::new("")),
             sprites,
             active_sprite: 0,
-            visible: true,
+            //visible: true,
             input_actions: HashMap::new(),
-            //collider: Collider::new(Coord::new(0, 0), Size::new(0, 0), true),
+            collider: Collider::new(Coords::new(0, 0, 0), size, true),
         }))
     }
     // Id
@@ -116,5 +120,14 @@ impl Object {
 
     pub fn set_movement(&mut self, movement: Movement) {
         self.movement = movement;
+    }
+
+    pub fn movement(&self) -> &Movement {
+        &self.movement
+    }
+
+    // Collision
+    pub fn collider(&self) -> &Collider {
+        &self.collider
     }
 }

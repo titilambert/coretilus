@@ -3,13 +3,22 @@ use std::rc::Rc;
 
 use crate::collision::Collision;
 use crate::collision::ScreenEdge;
-use crate::commands::mr::sprite::{
-    get_sprite_explosion, get_sprite_mini, get_sprite_mini_landed, get_sprite_sign_fail,
-    get_sprite_sign_land, get_sprite_sign_success, get_sprite_sign_tryagain, get_sprite_spaceport,
-    get_sprite_std, get_sprite_std_landed,
-};
-use crate::coord::{Coord, Position, XTermPosition, YTermPosition};
-use crate::engine::{RenderEngine, get_terminal_size};
+use crate::commands::mr::sprite::get_sprite_explosion;
+use crate::commands::mr::sprite::get_sprite_mini;
+use crate::commands::mr::sprite::get_sprite_mini_landed;
+use crate::commands::mr::sprite::get_sprite_sign_fail;
+use crate::commands::mr::sprite::get_sprite_sign_land;
+use crate::commands::mr::sprite::get_sprite_sign_success;
+use crate::commands::mr::sprite::get_sprite_sign_tryagain;
+use crate::commands::mr::sprite::get_sprite_spaceport;
+use crate::commands::mr::sprite::get_sprite_std;
+use crate::commands::mr::sprite::get_sprite_std_landed;
+use crate::coord::Coord;
+use crate::coord::Position;
+use crate::coord::XTermPosition;
+use crate::coord::YTermPosition;
+use crate::engine::RenderEngine;
+use crate::engine::get_terminal_size;
 use crate::sprite::Sprite;
 use crate::sprite::SpriteRef;
 use crate::tools::parse_args;

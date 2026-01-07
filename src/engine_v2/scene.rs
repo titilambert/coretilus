@@ -1,8 +1,9 @@
-use std::io::stdout;
+//use std::io::stdout;
 
 use crossterm::event::KeyCode;
 
-use crate::engine_v2::object::object::ObjectRef;
+//use crate::engine_v2::collision::Collision;
+use crate::engine_v2::entity::object::ObjectRef;
 use crate::engine_v2::size::Size;
 
 pub struct Scene {
@@ -13,15 +14,23 @@ impl Scene {
     pub fn new(terminal_size: Size) -> Self {
         Self { terminal_size }
     }
-    pub fn update(&self, tick_id: usize, objects: &mut [ObjectRef]) {
+    pub fn update(
+        &mut self,
+        tick_id: usize,
+        objects: &mut [ObjectRef],
+        //collisions: &mut [Collision],
+    ) {
         // Hooks
         //self.hooks.process(&self.objects);
         for object in objects.iter() {
             object.borrow_mut().update(tick_id, self.terminal_size);
         }
         // collisions
-        //self.collisions.check(&self.objects);
-
+        //for col in collisions.iter_mut() {
+        //    if col.is_colliding(self.terminal_size) {
+        //        col.trigger(self);
+        //    }
+        //}
         // Hooks
         //self.hooks.process(&self.objects);
     }
@@ -39,8 +48,8 @@ impl Scene {
         }
     }
 
-    pub fn build_screen(&self, tick_id: usize, objects: &mut [ObjectRef]) -> Vec<Vec<char>> {
-        let mut stdout = stdout();
+    pub fn build_screen(&self, _tick_id: usize, objects: &mut [ObjectRef]) -> Vec<Vec<char>> {
+        //let mut stdout = stdout();
 
         let mut screen: Vec<Vec<char>> = vec![
             vec![' '; self.terminal_size.width() as usize];
@@ -93,8 +102,8 @@ impl Scene {
             }*/
 
             let object = objectref.borrow();
-            let object_x = object.coords().x().clone();
-            let object_y = object.coords().y().clone();
+            let object_x = object.coords().x();
+            let object_y = object.coords().y();
             let frame = object.current_frame();
             //let object_y = object_mut.coords().y().clone();
 

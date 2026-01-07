@@ -1,4 +1,5 @@
-use crate::{coord::Coord, frame::Frame};
+use crate::coord::Coord;
+use crate::frame::Frame;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AnimationKind {

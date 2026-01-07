@@ -1,7 +1,7 @@
+pub mod collision;
 pub mod coords;
 pub mod engine;
-pub mod object;
+pub mod entity;
 pub mod position;
-pub mod render;
 pub mod scene;
 pub mod size;

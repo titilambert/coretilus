@@ -1,4 +1,5 @@
-use crate::engine_v2::{coords::Coords, size::Size};
+use crate::engine_v2::coords::Coords;
+use crate::engine_v2::size::Size;
 
 #[derive(Clone, Copy, Debug)]
 pub enum XTermPosition {

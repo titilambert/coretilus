@@ -1,6 +1,7 @@
 use crate::animation::Animation;
 use crate::frame::Frame;
-use crate::sprite::{Sprite, SpriteRef};
+use crate::sprite::Sprite;
+use crate::sprite::SpriteRef;
 
 const FRAME_DOG1: &str = include_str!("frames/dog1.adoc");
 const FRAME_DOG2: &str = include_str!("frames/dog2.adoc");

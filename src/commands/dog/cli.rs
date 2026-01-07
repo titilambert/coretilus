@@ -1,6 +1,9 @@
 use crate::collision::Collision;
-use crate::commands::dog::sprite::{get_sprite_dog, get_sprite_domain};
-use crate::coord::{Position, XTermPosition, YTermPosition};
+use crate::commands::dog::sprite::get_sprite_dog;
+use crate::commands::dog::sprite::get_sprite_domain;
+use crate::coord::Position;
+use crate::coord::XTermPosition;
+use crate::coord::YTermPosition;
 use crate::engine::RenderEngine;
 use crate::sprite::SpriteRef;
 use crate::tools::filter_params_regex;
@@ -62,7 +65,8 @@ impl Command for Dog {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{commands::dog::cli::Dog, trajectory::Direction};
+    use crate::commands::dog::cli::Dog;
+    use crate::trajectory::Direction;
 
     #[test]
     fn test_select_sprite_std() {

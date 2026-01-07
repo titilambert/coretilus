@@ -1,11 +1,18 @@
 use std::cmp;
 
 use crate::collision::Collision;
-use crate::commands::sl::sprite::{
-    get_sprite_accident, get_sprite_c51, get_sprite_coal, get_sprite_d51, get_sprite_logo,
-    get_sprite_logo_car, get_sprite_logo_coal, get_sprite_smoke,
-};
-use crate::coord::{Coord, Position, XTermPosition, YTermPosition};
+use crate::commands::sl::sprite::get_sprite_accident;
+use crate::commands::sl::sprite::get_sprite_c51;
+use crate::commands::sl::sprite::get_sprite_coal;
+use crate::commands::sl::sprite::get_sprite_d51;
+use crate::commands::sl::sprite::get_sprite_logo;
+use crate::commands::sl::sprite::get_sprite_logo_car;
+use crate::commands::sl::sprite::get_sprite_logo_coal;
+use crate::commands::sl::sprite::get_sprite_smoke;
+use crate::coord::Coord;
+use crate::coord::Position;
+use crate::coord::XTermPosition;
+use crate::coord::YTermPosition;
 use crate::engine::RenderEngine;
 use crate::sprite::SpriteRef;
 use crate::tools::parse_args;

@@ -1,20 +1,27 @@
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use std::time::Instant;
 
-use std::io::{Stdout, Write, stdout};
+use std::io::Write;
+use std::io::stdout;
 
-use crossterm::event::{self, Event, KeyCode, KeyModifiers, poll, read};
-use crossterm::terminal::{LeaveAlternateScreen, disable_raw_mode};
-use crossterm::{ExecutableCommand, cursor::Show};
-use crossterm::{
-    cursor::Hide,
-    terminal::{EnterAlternateScreen, enable_raw_mode},
-};
+use crossterm::ExecutableCommand;
+use crossterm::cursor::Hide;
+use crossterm::cursor::Show;
+use crossterm::event::Event;
+use crossterm::event::KeyCode;
+use crossterm::event::KeyModifiers;
+use crossterm::event::poll;
+use crossterm::event::read;
+use crossterm::terminal::EnterAlternateScreen;
+use crossterm::terminal::LeaveAlternateScreen;
+use crossterm::terminal::disable_raw_mode;
+use crossterm::terminal::enable_raw_mode;
 
-use crate::engine_v2::object::object::ObjectRef;
-use crate::{
-    engine_v2::{scene::Scene, size::Size},
-    tools::get_terminal_size,
-};
+use crate::engine_v2::collision::Collision;
+use crate::engine_v2::entity::object::ObjectRef;
+use crate::engine_v2::scene::Scene;
+use crate::engine_v2::size::Size;
+use crate::tools::get_terminal_size;
 
 pub struct Engine {
     scene: Scene, // the scene containing all objects
@@ -24,20 +31,26 @@ pub struct Engine {
     ttl: usize, // Number of tick to live, 0 means infinite
     stop_on_sigint: bool,
     objects: Vec<ObjectRef>,
+    collisions: Vec<Collision>,
 }
 
 impl Engine {
-    pub fn new(objects: &mut Vec<ObjectRef>, ttl: usize) -> Self {
+    pub fn new(objects: &mut Vec<ObjectRef>, collisions: Vec<Collision>, ttl: usize) -> Self {
         let terminal_size = get_terminal_size();
         Self {
             scene: Scene::new(terminal_size),
             tick_duration: Duration::from_millis(5),
-            terminal_size: terminal_size,
+            terminal_size,
             tick_id: 0,
             ttl,
             stop_on_sigint: true,
             objects: objects.to_owned(),
+            collisions,
         }
+    }
+
+    pub fn stop(&mut self) {
+        self.ttl = 1;
     }
 
     pub fn run(&mut self) {
@@ -85,8 +98,23 @@ impl Engine {
                 break;
             }
 
-            // update the scene (all objects, movements, animations, collisions, etc.)
+            // update the scene (all objects, movements, animations, etc.)
             self.scene.update(self.tick_id, &mut self.objects);
+
+            // collisions
+            for i in (0..self.collisions.len()).rev() {
+                let terminal_size = self.terminal_size;
+
+                // Retirer temporairement l'élément
+                let mut collision = self.collisions.remove(i);
+
+                if collision.is_colliding(terminal_size) {
+                    collision.trigger(self);
+                }
+
+                // Remettre à sa place
+                self.collisions.insert(i, collision);
+            }
 
             // build the ASCII frame from the scene
             let screen = self.scene.build_screen(self.tick_id, &mut self.objects);

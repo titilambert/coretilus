@@ -359,7 +359,10 @@ fn bresenham_path(start: Coord, end: Coord) -> Vec<Coord> {
 mod tests {
     use super::*;
     use crate::animation::Animation;
-    use crate::coord::{Coord, Position, XTermPosition, YTermPosition};
+    use crate::coord::Coord;
+    use crate::coord::Position;
+    use crate::coord::XTermPosition;
+    use crate::coord::YTermPosition;
     use crate::engine::Size;
     use crate::frame::Frame;
     use crate::sprite::Sprite;

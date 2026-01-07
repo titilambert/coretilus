@@ -1,6 +1,7 @@
 use crate::animation::Animation;
 use crate::frame::Frame;
-use crate::sprite::{Sprite, SpriteRef};
+use crate::sprite::Sprite;
+use crate::sprite::SpriteRef;
 
 const FRAME_STD1: &str = include_str!("frames/std1.adoc");
 const FRAME_STD2: &str = include_str!("frames/std2.adoc");

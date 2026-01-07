@@ -1,8 +1,12 @@
 use crate::collision::Collision;
-use crate::commands::gti::sprite::{
-    get_sprite_commit, get_sprite_pull, get_sprite_push, get_sprite_std, get_sprite_tag,
-};
-use crate::coord::{Position, XTermPosition, YTermPosition};
+use crate::commands::gti::sprite::get_sprite_commit;
+use crate::commands::gti::sprite::get_sprite_pull;
+use crate::commands::gti::sprite::get_sprite_push;
+use crate::commands::gti::sprite::get_sprite_std;
+use crate::commands::gti::sprite::get_sprite_tag;
+use crate::coord::Position;
+use crate::coord::XTermPosition;
+use crate::coord::YTermPosition;
 use crate::engine::RenderEngine;
 use crate::sprite::SpriteRef;
 use crate::tools::parse_args;

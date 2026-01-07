@@ -1,4 +1,4 @@
-use crate::engine_v2::object::frame::Frame;
+use crate::engine_v2::entity::frame::Frame;
 
 #[derive(Clone, Copy)]
 pub enum AnimationType {
@@ -88,7 +88,7 @@ impl SpriteAnimation {
 
     pub fn advance(&mut self, tick_delta: usize, moved: bool) {
         match self.animation_type {
-            AnimationType::Static => return,
+            AnimationType::Static => (),
 
             AnimationType::TickBased => {
                 self.elapsed_ticks += tick_delta;

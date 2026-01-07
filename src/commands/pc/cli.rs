@@ -2,13 +2,18 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::collision::Collision;
-use crate::commands::pc::sprite::{
-    get_sprite_cachel2, get_sprite_chipset, get_sprite_cpu, get_sprite_data,
-    get_sprite_motherboard, get_sprite_ram,
-};
-use crate::coord::{Position, XTermPosition, YTermPosition};
+use crate::commands::pc::sprite::get_sprite_cachel2;
+use crate::commands::pc::sprite::get_sprite_chipset;
+use crate::commands::pc::sprite::get_sprite_cpu;
+use crate::commands::pc::sprite::get_sprite_data;
+use crate::commands::pc::sprite::get_sprite_motherboard;
+use crate::commands::pc::sprite::get_sprite_ram;
+use crate::coord::Position;
+use crate::coord::XTermPosition;
+use crate::coord::YTermPosition;
 use crate::engine::RenderEngine;
-use crate::sprite::{Sprite, SpriteRef};
+use crate::sprite::Sprite;
+use crate::sprite::SpriteRef;
 use crate::tools::parse_args;
 use crate::trajectory::Trajectory;
 

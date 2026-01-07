@@ -1,5 +1,5 @@
 use crate::engine_v2::coords::Coords;
-use crate::engine_v2::object::object::ObjectRef;
+use crate::engine_v2::entity::object::ObjectRef;
 use crate::engine_v2::position::Position;
 use crate::engine_v2::size::Size;
 
@@ -98,6 +98,10 @@ impl Movement {
         self.direction
     }
 
+    pub fn speed(&self) -> i32 {
+        self.speed
+    }
+
     pub fn has_started(&self) -> bool {
         self.started_tick_id.is_some()
     }
@@ -106,7 +110,7 @@ impl Movement {
         self.started_tick_id
     }
 
-    pub fn get_coordinate(&self, tick_id: usize) -> Coords {
+    pub fn get_coordinate(&self, _tick_id: usize) -> Coords {
         if self.current_coordinate_id >= self.path.len() {
             return self.path[self.path.len() - 1];
         }

@@ -1,17 +1,27 @@
-use crate::collision::{Collision, process_collisions};
-use crate::sprite::{Sprite, SpriteRef};
-use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
-use crossterm::{
-    ExecutableCommand,
-    cursor::{Hide, Show},
-};
-use crossterm::{
-    event::{Event, KeyCode, KeyModifiers, poll, read},
-    terminal::{disable_raw_mode, enable_raw_mode},
-};
-use std::io::{Stdout, Write, stdout};
-use std::time::{Duration, Instant};
-use terminal_size::{Height, Width, terminal_size};
+use crate::collision::Collision;
+use crate::collision::process_collisions;
+use crate::sprite::Sprite;
+use crate::sprite::SpriteRef;
+use crossterm::ExecutableCommand;
+use crossterm::cursor::Hide;
+use crossterm::cursor::Show;
+use crossterm::event::Event;
+use crossterm::event::KeyCode;
+use crossterm::event::KeyModifiers;
+use crossterm::event::poll;
+use crossterm::event::read;
+use crossterm::terminal::EnterAlternateScreen;
+use crossterm::terminal::LeaveAlternateScreen;
+use crossterm::terminal::disable_raw_mode;
+use crossterm::terminal::enable_raw_mode;
+use std::io::Stdout;
+use std::io::Write;
+use std::io::stdout;
+use std::time::Duration;
+use std::time::Instant;
+use terminal_size::Height;
+use terminal_size::Width;
+use terminal_size::terminal_size;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Size {

@@ -1,9 +1,6 @@
-use std::thread::current;
-
-use crate::engine_v2::{
-    object::{frame::Frame, sprite_animation::SpriteAnimation},
-    size::Size,
-};
+use crate::engine_v2::entity::frame::Frame;
+use crate::engine_v2::entity::sprite_animation::SpriteAnimation;
+use crate::engine_v2::size::Size;
 
 #[derive(Clone)]
 pub struct Sprite {

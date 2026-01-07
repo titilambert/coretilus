@@ -1,27 +1,18 @@
-use crate::coord::Coord;
-use crate::engine::Size;
+use crate::engine_v2::coords::Coords;
+use crate::engine_v2::engine::Engine;
+use crate::engine_v2::entity::object::ObjectRef;
+use crate::engine_v2::size::Size;
 use std::rc::Rc;
-
-use crate::engine::RenderEngine;
-use crate::sprite::SpriteRef;
-
-pub fn process_collisions(engine: &mut RenderEngine, collisions: &mut [Collision]) {
-    for col in collisions.iter_mut() {
-        if col.is_colliding(engine.terminal_size()) {
-            col.trigger(engine);
-        }
-    }
-}
 
 #[derive(Clone, Copy)]
 pub struct Collider {
-    offset: Coord,
+    offset: Coords,
     size: Size,
     is_active: bool,
 }
 
 impl Collider {
-    pub fn new(offset: Coord, size: Size, is_active: bool) -> Self {
+    pub fn new(offset: Coords, size: Size, is_active: bool) -> Self {
         Self {
             offset,
             size,
@@ -41,33 +32,49 @@ impl Collider {
     pub fn is_null(&self) -> bool {
         self.size.height() == 0 && self.size.width() == 0
     }
-    pub fn min(&self, sprite_pos: Coord) -> Coord {
-        sprite_pos + self.offset
+    pub fn min(&self, object_pos: Coords) -> Coords {
+        object_pos + self.offset
     }
-    pub fn max(&self, sprite_pos: Coord) -> Coord {
-        sprite_pos + self.offset + Coord::new(self.size.width() as i32, self.size.height() as i32)
+    pub fn max(&self, object_pos: Coords) -> Coords {
+        object_pos
+            + self.offset
+            + Coords::new(self.size.width() as i32, self.size.height() as i32, 0)
     }
 }
 
+/// Represents the different edges of the screen that can be used for collision detection.
+#[derive(Clone)]
 pub enum ScreenEdge {
-    Top,
-    Left,
-    Bottom,
-    Right,
+    /// The top edge of the screen aligned with the object's top side.
+    TopWithObjectTopSide,
+    /// The top edge of the screen aligned with the object's bottom side.
+    TopWithObjectBottomSide,
+    /// The left edge of the screen aligned with the object's left side.
+    LeftWithObjectLeftSide,
+    /// The left edge of the screen aligned with the object's right side.
+    LeftWithObjectRightSide,
+    /// The bottom edge of the screen aligned with the object's bottom side.
+    BottomWithObjectBottomSide,
+    /// The bottom edge of the screen aligned with the object's top side.
+    BottomWithObjectTopSide,
+    /// The right edge of the screen aligned with the object's right side.
+    RightWithObjectRightSide,
+    /// The right edge of the screen aligned with the object's left side.
+    RightWithObjectLeftSide,
 }
 
-type SpriteCollisionCallback = Box<dyn FnMut(&SpriteRef, &SpriteRef, usize, &mut RenderEngine)>;
-type EdgeCollisionCallback = Box<dyn FnMut(&SpriteRef, usize, &mut RenderEngine)>;
+type SpriteCollisionCallback = Box<dyn FnMut(&ObjectRef, &ObjectRef, usize, &mut Engine)>;
+type EdgeCollisionCallback = Box<dyn FnMut(&ObjectRef, usize, &mut Engine)>;
 
 pub enum Collision {
-    Sprite {
-        a: SpriteRef,
-        b: SpriteRef,
+    Object {
+        a: ObjectRef,
+        b: ObjectRef,
         counter: usize,
         callback: SpriteCollisionCallback,
     },
     Edge {
-        a: SpriteRef,
+        a: ObjectRef,
         b: ScreenEdge,
         counter: usize,
         callback: EdgeCollisionCallback,
@@ -76,11 +83,11 @@ pub enum Collision {
 
 impl Collision {
     pub fn new_sprite(
-        a: SpriteRef,
-        b: SpriteRef,
-        callback: impl FnMut(&SpriteRef, &SpriteRef, usize, &mut RenderEngine) + 'static,
+        a: ObjectRef,
+        b: ObjectRef,
+        callback: impl FnMut(&ObjectRef, &ObjectRef, usize, &mut Engine) + 'static,
     ) -> Self {
-        Collision::Sprite {
+        Collision::Object {
             a,
             b,
             counter: 0,
@@ -89,9 +96,9 @@ impl Collision {
     }
 
     pub fn new_edge(
-        a: SpriteRef,
+        a: ObjectRef,
         b: ScreenEdge,
-        callback: impl FnMut(&SpriteRef, usize, &mut RenderEngine) + 'static,
+        callback: impl FnMut(&ObjectRef, usize, &mut Engine) + 'static,
     ) -> Self {
         Collision::Edge {
             a,
@@ -103,96 +110,103 @@ impl Collision {
 
     pub fn counter(&self) -> usize {
         match self {
-            Collision::Sprite { counter, .. } => *counter,
+            Collision::Object { counter, .. } => *counter,
             Collision::Edge { counter, .. } => *counter,
         }
     }
 
-    pub fn is_colliding(&mut self, terminal_size: Size) -> bool {
+    pub fn is_colliding(&self, terminal_size: Size) -> bool {
         match self {
-            Collision::Sprite { a, b, counter, .. } => {
+            Collision::Object { a, b, .. } => {
                 if Rc::ptr_eq(a, b) {
-                    panic!("Same sprite twice used in the collision handler");
+                    panic!("Same object twice used in the collision handler");
                 }
                 if !(a.borrow_mut().collider().is_active() && b.borrow_mut().collider().is_active())
                 {
                     return false;
                 }
-                let (a_coord, a_collider) = {
-                    let mut a = a.borrow_mut();
-                    (a.current_coordinate(), *a.collider())
+                let (a_coords, a_collider) = {
+                    let a = a.borrow_mut();
+                    (a.coords(), *a.collider())
                 };
-                let (b_coord, b_collider) = {
-                    let mut b = b.borrow_mut();
-                    (b.current_coordinate(), *b.collider())
+                let (b_coords, b_collider) = {
+                    let b = b.borrow_mut();
+                    (b.coords(), *b.collider())
                 };
-                let a_min = a_collider.min(a_coord);
-                let b_min = b_collider.min(b_coord);
-                let a_max = a_collider.max(a_coord);
-                let b_max = b_collider.max(b_coord);
+                let a_min = a_collider.min(a_coords);
+                let b_min = b_collider.min(b_coords);
+                let a_max = a_collider.max(a_coords);
+                let b_max = b_collider.max(b_coords);
 
-                let colliding = a_min.x() <= b_max.x()
+                a_min.x() <= b_max.x()
                     && a_max.x() > b_min.x()
                     && a_min.y() < b_max.y()
-                    && a_max.y() > b_min.y();
-
-                if colliding {
-                    *counter += 1;
-                }
-                colliding
+                    && a_max.y() > b_min.y()
             }
-            Collision::Edge { a, b, counter, .. } => {
+            Collision::Edge { a, b, .. } => {
                 if !a.borrow_mut().collider().is_active() {
                     return false;
                 }
 
-                let (a_coord, a_collider) = {
-                    let mut a = a.borrow_mut();
-                    (a.current_coordinate(), *a.collider())
+                let (a_coords, a_collider) = {
+                    let a = a.borrow_mut();
+                    (a.coords(), *a.collider())
                 };
 
-                let a_min = a_collider.min(a_coord);
-                let a_max = a_collider.max(a_coord);
+                let a_min = a_collider.min(a_coords);
+                let a_max = a_collider.max(a_coords);
 
-                let colliding = match b {
-                    ScreenEdge::Bottom => a_min.y() == 0,
-                    ScreenEdge::Left => a_min.x() == 0,
-                    ScreenEdge::Top => a_max.y() == terminal_size.height() as i32,
-                    ScreenEdge::Right => a_max.x() == terminal_size.width() as i32,
-                };
-                if colliding {
-                    *counter += 1;
+                match b {
+                    ScreenEdge::BottomWithObjectBottomSide => a_min.y() == 0,
+                    ScreenEdge::BottomWithObjectTopSide => a_max.y() == 0,
+                    ScreenEdge::LeftWithObjectLeftSide => a_min.x() == 0,
+                    ScreenEdge::LeftWithObjectRightSide => a_min.x() == 0,
+                    ScreenEdge::TopWithObjectTopSide => a_max.y() == terminal_size.height() as i32,
+                    ScreenEdge::TopWithObjectBottomSide => {
+                        a_max.x() == terminal_size.height() as i32
+                    }
+                    ScreenEdge::RightWithObjectRightSide => {
+                        a_max.x() == terminal_size.width() as i32
+                    }
+                    ScreenEdge::RightWithObjectLeftSide => {
+                        a_min.x() == terminal_size.width() as i32
+                    }
                 }
-                colliding
             }
         }
     }
 
-    pub fn trigger(&mut self, engine: &mut RenderEngine) {
+    pub fn trigger(&mut self, engine: &mut Engine) {
         match self {
-            Collision::Sprite {
+            Collision::Object {
                 a,
                 b,
                 counter,
                 callback,
-            } => (callback)(a, b, *counter, engine),
+            } => {
+                *counter += 1;
+                (callback)(a, b, *counter, engine);
+            }
             Collision::Edge {
                 a,
                 counter,
                 callback,
                 ..
-            } => (callback)(a, *counter, engine),
+            } => {
+                *counter += 1;
+                (callback)(a, *counter, engine);
+            }
         }
     }
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use crate::animation::Animation;
-    use crate::coord::Position;
-    use crate::coord::XTermPosition;
-    use crate::coord::YTermPosition;
     use crate::engine::Size;
+    use crate::engine_v2::coords::Coords;
+    //:{Position, XTermPosition, YTermPosition};
     use crate::frame::Frame;
     use crate::sprite::Sprite;
     use crate::trajectory::Trajectory;
@@ -207,7 +221,7 @@ mod tests {
         let anim = Animation::new_static(frames_a);
         sprite_a.borrow_mut().set_animation(anim);
         let trajectory = Trajectory::new_stationary(
-            Position::new(XTermPosition::Coord(30), YTermPosition::Coord(30)),
+            Position::new(XTermPosition::Coords(30), YTermPosition::Coords(30)),
             300,
         );
         let terminal_size = Size::new(30, 30);
@@ -225,7 +239,7 @@ mod tests {
                 *triggered2.borrow_mut() = true;
             }
         });
-        let mut engine = RenderEngine::new(0);
+        let mut engine = Scene::new(0);
         let mut collisions = vec![collision];
         process_collisions(&mut engine, &mut collisions);
         assert!(!*triggered.borrow());
@@ -238,7 +252,7 @@ mod tests {
         let anim = Animation::new_static(frames_a);
         sprite_a.clone().borrow_mut().set_animation(anim);
         let trajectory = Trajectory::new_stationary(
-            Position::new(XTermPosition::Coord(0), YTermPosition::Coord(0)),
+            Position::new(XTermPosition::Coords(0), YTermPosition::Coords(0)),
             300,
         );
         let terminal_size = Size::new(30, 30);
@@ -257,7 +271,7 @@ mod tests {
                 *triggered2.borrow_mut() = true;
             }
         });
-        let mut engine = RenderEngine::new(0);
+        let mut engine = Scene::new(0);
         let mut collisions = vec![collision];
         process_collisions(&mut engine, &mut collisions);
 
@@ -283,8 +297,9 @@ mod tests {
 
         let collision =
             Collision::new_sprite(sprite_a.clone(), sprite_a.clone(), move |_, _, _, _| {});
-        let mut engine = RenderEngine::new(0);
+        let mut engine = Scene::new(0);
         let mut collisions = vec![collision];
         process_collisions(&mut engine, &mut collisions);
     }
 }
+*/

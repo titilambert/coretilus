@@ -1,9 +1,8 @@
-use crate::engine_v2::object::{
-    frame::Frame,
-    object::{Object, ObjectRef},
-    sprite::Sprite,
-    sprite_animation::SpriteAnimation,
-};
+use crate::engine_v2::entity::frame::Frame;
+use crate::engine_v2::entity::object::Object;
+use crate::engine_v2::entity::object::ObjectRef;
+use crate::engine_v2::entity::sprite::Sprite;
+use crate::engine_v2::entity::sprite_animation::SpriteAnimation;
 
 const FRAME_STD1: &str = include_str!("frames/std1.adoc");
 const FRAME_STD2: &str = include_str!("frames/std2.adoc");
@@ -23,16 +22,14 @@ pub fn get_object_std() -> ObjectRef {
     let anim = SpriteAnimation::new_movement_based(frames, true);
     let sprite = Sprite::new(anim);
 
-    let object = Object::new(9, String::from("Golf GTI"), vec![sprite]);
-    object
+    Object::new(9, String::from("Golf GTI"), vec![sprite])
 }
 
 pub fn get_object_pull() -> ObjectRef {
     let frames = vec![Frame::new(FRAME_PULL1), Frame::new(FRAME_PULL2)];
     let anim = SpriteAnimation::new_movement_based(frames, true);
     let sprite = Sprite::new(anim);
-    let object = Object::new(10, String::from("Golf GTI pulled"), vec![sprite]);
-    object
+    Object::new(10, String::from("Golf GTI pulled"), vec![sprite])
 }
 
 pub fn get_object_push() -> ObjectRef {
@@ -40,8 +37,7 @@ pub fn get_object_push() -> ObjectRef {
     let anim = SpriteAnimation::new_movement_based(frames, true);
     let sprite = Sprite::new(anim);
 
-    let object = Object::new(11, String::from("Golf GTI pushed"), vec![sprite]);
-    object
+    Object::new(11, String::from("Golf GTI pushed"), vec![sprite])
 }
 
 pub fn get_object_tag() -> ObjectRef {
@@ -53,8 +49,7 @@ pub fn get_object_tag() -> ObjectRef {
     let anim = SpriteAnimation::new_tick_based(frames, 20, true);
     let sprite = Sprite::new(anim);
 
-    let object = Object::new(12, String::from("Golf GTI tagged"), vec![sprite]);
-    object
+    Object::new(12, String::from("Golf GTI tagged"), vec![sprite])
 }
 
 pub fn get_object_commit() -> ObjectRef {
@@ -66,6 +61,5 @@ pub fn get_object_commit() -> ObjectRef {
     let anim = SpriteAnimation::new_tick_based(frames, 20, true);
     let sprite = Sprite::new(anim);
 
-    let object = Object::new(13, String::from("Golf GTI commited"), vec![sprite]);
-    object
+    Object::new(13, String::from("Golf GTI commited"), vec![sprite])
 }
