@@ -7,6 +7,7 @@ use crate::commands::gti::objects::get_object_tag;
 use crate::engine_v2::collision::Collision;
 use crate::engine_v2::collision::ScreenEdge;
 use crate::engine_v2::engine::Engine;
+use crate::engine_v2::entity::movement::Direction;
 use crate::engine_v2::entity::movement::Movement;
 use crate::engine_v2::entity::object::ObjectRef;
 use crate::engine_v2::position::Position;
@@ -85,7 +86,13 @@ impl CommandV2 for Gti {
     }
     fn execute(&mut self) {
         let (objects, collisions) = self.select_objects(std::env::args());
-        let mut engine = Engine::new(objects, collisions, 3000);
+        let mut ttl = 0;
+        // Get direction of the first object
+        let car_direction = objects[0].borrow_mut().movement().direction();
+        if car_direction == Direction::Stationary {
+            ttl = 300;
+        }
+        let mut engine = Engine::new(objects, collisions, ttl);
         engine.run();
     }
 }

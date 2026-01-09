@@ -42,7 +42,6 @@ pub fn get_object_mini() -> ObjectRef {
         true,
     );
     let anim = SpriteAnimation::new_movement_based(frames, true);
-    //let anim = SpriteAnimation::new_tick_based(frames, 60, true);
     let sprite = Sprite::new(anim);
     Object::new(
         14,
@@ -87,7 +86,7 @@ pub fn get_object_explosion() -> ObjectRef {
         Frame::new(FRAME_EXPLOSION9),
         Frame::new(FRAME_EXPLOSION10),
     ];
-    let anim = SpriteAnimation::new_tick_based(frames.clone(), 40, false);
+    let anim = SpriteAnimation::new_tick_based(frames.clone(), 40, false, None);
     let sprite = Sprite::new(anim);
     Object::new(19, String::from("Explosion"), vec![sprite], None)
 }

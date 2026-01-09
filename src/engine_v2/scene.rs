@@ -58,7 +58,37 @@ impl Scene {
             self.terminal_size.height() as usize
         ];
 
-        // Order and filter and sprites
+        // Order objects by z-coordinate
+        objects.sort_by_key(|object| object.borrow().coords().z());
+        /*panic!(
+            "{} - {} - {}\n{}- {}\n{} - {} - {}\n{} - {} - {}\n{} - {} - {}\n{} - {} - {}\n{}- {}\n{}- {}\n{}- {}\n{}- {}\n",
+            objects.len(),
+            objects[0].borrow().tdid(),
+            objects[0].borrow().coords().z(),
+            objects[1].borrow().tdid(),
+            objects[1].borrow().coords().z(),
+            objects[2].borrow().tdid(),
+            objects[2].borrow().coords().x(),
+            objects[2].borrow().coords().z(),
+            objects[3].borrow().tdid(),
+            objects[3].borrow().coords().x(),
+            objects[3].borrow().coords().z(),
+            objects[4].borrow().tdid(),
+            objects[4].borrow().coords().x(),
+            objects[4].borrow().coords().z(),
+            objects[5].borrow().tdid(),
+            objects[5].borrow().coords().x(),
+            objects[5].borrow().coords().z(),
+            objects[6].borrow().tdid(),
+            objects[6].borrow().coords().z(),
+            objects[7].borrow().tdid(),
+            objects[7].borrow().coords().z(),
+            objects[8].borrow().tdid(),
+            objects[8].borrow().coords().z(),
+            objects[9].borrow().tdid(),
+            objects[9].borrow().coords().z(),
+        );*/
+
         for objectref in objects.iter() {
             /*
             sprite.compute_path(self.terminal_size);

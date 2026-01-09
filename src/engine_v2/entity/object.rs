@@ -9,7 +9,6 @@ use uuid::Uuid;
 use crate::engine_v2::collision::Collider;
 use crate::engine_v2::coords::Coords;
 use crate::engine_v2::entity::frame::Frame;
-use crate::engine_v2::entity::movement::Direction;
 use crate::engine_v2::entity::movement::Movement;
 use crate::engine_v2::entity::sprite::Sprite;
 use crate::engine_v2::size::Size;
@@ -62,8 +61,6 @@ impl Object {
             coords: Coords::new(0, 0, 0),
             coords_history: vec![],
             movement: Movement::new_none(),
-            //trajectory,
-            //animation: Animation::new_static(Frame::new("")),
             sprites,
             active_sprite: 0,
             visible: true,
@@ -113,7 +110,6 @@ impl Object {
         let sprite = &mut self.sprites[self.active_sprite];
         self.movement.advance(tick_id, terminal_size, sprite.size());
         self.coords_history.push(self.coords);
-        //self.coords = self.movement.get_coordinate(tick_id);
 
         let tdid = self.tdid; // Capturer avant le catch_unwind
         let result = panic::catch_unwind(panic::AssertUnwindSafe(|| {
@@ -123,33 +119,20 @@ impl Object {
         self.coords = match result {
             Ok(coords) => coords,
             Err(_) => {
-                eprintln!("Panic dans get_coordinate pour objet tdid: {}", tdid);
-                eprintln!(
-                    "Panic dans get_coordinate pour objet tdid: {:#?}",
-                    self.movement().direction()
-                );
-                panic!("Erreur dans get_coordinate pour tdid: {}", tdid);
+                panic!("Can not find coords for tdid: {}", tdid);
             }
         };
 
-        self.coords = self.coords + self.movement.offset();
         let mut moved = true;
         if !self.coords_history.is_empty() {
             moved = self.coords.x() != (self.coords_history[self.coords_history.len() - 1].x())
                 || (self.coords.y() != self.coords_history[self.coords_history.len() - 1].y());
         }
         sprite.advance(tick_id, moved);
-
-        /*
-        let moved = self.coords != previous_coord;
-        self.sprite_animations[self.active_animation].advance(delta_ticks, moved);
-        */
     }
+
     // Movement
     pub fn compute_predefined_path(&mut self, terminal_size: Size) {
-        if self.movement.direction() == Direction::Linear {
-            //panic!("FFFF {}", self.tdid);
-        }
         self.movement
             .compute_predefined_path(terminal_size, self.size());
     }

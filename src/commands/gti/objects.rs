@@ -46,7 +46,7 @@ pub fn get_object_tag() -> ObjectRef {
         Frame::new(FRAME_TAG2),
         Frame::new(FRAME_TAG3),
     ];
-    let anim = SpriteAnimation::new_tick_based(frames, 20, true);
+    let anim = SpriteAnimation::new_tick_based(frames, 20, true, None);
     let sprite = Sprite::new(anim);
 
     Object::new(12, String::from("Golf GTI tagged"), vec![sprite], None)
@@ -58,7 +58,7 @@ pub fn get_object_commit() -> ObjectRef {
         Frame::new(FRAME_COMMIT2),
         Frame::new(FRAME_COMMIT3),
     ];
-    let anim = SpriteAnimation::new_tick_based(frames, 20, true);
+    let anim = SpriteAnimation::new_tick_based(frames, 20, true, None);
     let sprite = Sprite::new(anim);
 
     Object::new(13, String::from("Golf GTI commited"), vec![sprite], None)

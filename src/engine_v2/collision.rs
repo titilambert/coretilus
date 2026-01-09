@@ -156,11 +156,15 @@ impl Collision {
                 let a_min = a_collider.min(a_coords);
                 let a_max = a_collider.max(a_coords);
 
+                //if a_max.x() < 1 {
+                //    panic!("EEE {}", a_max.x());
+                //}
+
                 match b {
                     ScreenEdge::BottomWithObjectBottomSide => a_min.y() == 0,
                     ScreenEdge::BottomWithObjectTopSide => a_max.y() == 0,
                     ScreenEdge::LeftWithObjectLeftSide => a_min.x() == 0,
-                    ScreenEdge::LeftWithObjectRightSide => a_min.x() == 0,
+                    ScreenEdge::LeftWithObjectRightSide => a_max.x() == 0,
                     ScreenEdge::TopWithObjectTopSide => a_max.y() == terminal_size.height() as i32,
                     ScreenEdge::TopWithObjectBottomSide => {
                         a_max.x() == terminal_size.height() as i32

@@ -1,6 +1,8 @@
 use crate::engine_v2::coords::Coords;
 use crate::engine_v2::entity::object::ObjectRef;
 use crate::engine_v2::position::Position;
+use crate::engine_v2::position::XTermPosition;
+use crate::engine_v2::position::YTermPosition;
 use crate::engine_v2::size::Size;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -94,6 +96,23 @@ impl Movement {
         }
     }
 
+    pub fn new_relative(object: ObjectRef, offset: Coords) -> Self {
+        Self {
+            current_coordinate_id: 0,
+            path: vec![],
+            start: Position::new(XTermPosition::LeftOut, YTermPosition::BottomOut, 0),
+            end: Position::new(XTermPosition::LeftOut, YTermPosition::BottomOut, 0),
+            direction: Direction::Relative,
+            speed: -1,
+            is_done: false,
+            offset,
+            ttl: 0,
+            parent_object: Some(object),
+            started_tick_id: None,
+            radius: 0,
+        }
+    }
+
     pub fn direction(&self) -> Direction {
         self.direction
     }
@@ -111,13 +130,27 @@ impl Movement {
     }
 
     pub fn get_coordinate(&self, _tick_id: usize) -> Coords {
-        if self.path.is_empty() {
-            panic!("Object has no movement defined");
+        match self.direction {
+            Direction::Relative => {
+                let parent_coords = self
+                    .parent_object
+                    .as_ref()
+                    .unwrap()
+                    .borrow_mut()
+                    .movement()
+                    .get_coordinate(_tick_id);
+                parent_coords + self.offset
+            }
+            _ => {
+                if self.path.is_empty() {
+                    panic!("Object has no movement defined");
+                }
+                if self.current_coordinate_id >= self.path.len() {
+                    return self.path[self.path.len() - 1];
+                }
+                self.path[self.current_coordinate_id] + self.offset
+            }
         }
-        if self.current_coordinate_id >= self.path.len() {
-            return self.path[self.path.len() - 1];
-        }
-        self.path[self.current_coordinate_id]
     }
 
     pub fn predefined_path(&self) -> Vec<Coords> {
@@ -134,13 +167,9 @@ impl Movement {
                 self.add_speed(path)
             }
             Direction::Relative => {
-                if let Some(ref object_ref) = self.parent_object {
-                    let mut parent_object_mut = object_ref.borrow_mut();
-                    parent_object_mut.compute_predefined_path(terminal_size);
-                    parent_object_mut.predefined_path()
-                } else {
-                    panic!("No parent sprite")
-                }
+                // The relative movement doesn't have any predefined path
+                // The path is computed at runtime
+                vec![]
             }
             Direction::Stationary => {
                 let start_coord = self.start.resolve(terminal_size, sprite_size);
@@ -160,10 +189,14 @@ impl Movement {
             }
             _ => vec![],
         };
+        /*
         for coord in self.path.iter_mut() {
+            if self.offset.y() > 0 {
+                //  panic!("{:#?} --- {:#?}", coord.y(), coord.y() + self.offset.y());
+            }
             coord.set_x(coord.x() + self.offset.x());
             coord.set_y(coord.y() + self.offset.y());
-        }
+        }*/
     }
 
     fn add_speed(&self, path: Vec<Coords>) -> Vec<Coords> {

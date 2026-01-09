@@ -37,10 +37,16 @@ impl SpriteAnimation {
     }
 
     /// Constructor for a TickBased animation
-    pub fn new_tick_based(frames: Vec<Frame>, frame_ticks: usize, looping: bool) -> Self {
+    pub fn new_tick_based(
+        frames: Vec<Frame>,
+        frame_ticks: usize,
+        looping: bool,
+        start_frame_id: Option<usize>,
+    ) -> Self {
+        let current_frame_index = start_frame_id.unwrap_or_default();
         Self {
             frames,
-            current_frame_index: 0,
+            current_frame_index,
             default_frame_ticks: frame_ticks,
             elapsed_ticks: 0,
             animation_type: AnimationType::TickBased,
