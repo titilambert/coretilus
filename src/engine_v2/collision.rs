@@ -4,7 +4,7 @@ use crate::engine_v2::entity::object::ObjectRef;
 use crate::engine_v2::size::Size;
 use std::rc::Rc;
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Collider {
     offset: Coords,
     size: Size,

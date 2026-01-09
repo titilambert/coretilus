@@ -1,13 +1,13 @@
 use crate::engine_v2::entity::frame::Frame;
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub enum AnimationType {
     Static,
     TickBased,
     MovementBased,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct SpriteAnimation {
     frames: Vec<Frame>,
     current_frame_index: usize,
@@ -18,7 +18,7 @@ pub struct SpriteAnimation {
     animation_type: AnimationType,
     looping: bool,
     is_done: bool,
-    started_tick_id: Option<usize>,
+    started_tick_id: usize,
 }
 
 impl SpriteAnimation {
@@ -27,12 +27,12 @@ impl SpriteAnimation {
         Self {
             frames: vec![frame],
             current_frame_index: 0,
-            default_frame_ticks: 0,
+            default_frame_ticks: 1,
             elapsed_ticks: 0,
             animation_type: AnimationType::Static,
             looping: true,
             is_done: false,
-            started_tick_id: None,
+            started_tick_id: 0,
         }
     }
 
@@ -46,7 +46,7 @@ impl SpriteAnimation {
             animation_type: AnimationType::TickBased,
             looping,
             is_done: false,
-            started_tick_id: None,
+            started_tick_id: 0,
         }
     }
 
@@ -55,12 +55,12 @@ impl SpriteAnimation {
         Self {
             frames,
             current_frame_index: 0,
-            default_frame_ticks: 0, // not used for MovementBased
+            default_frame_ticks: 1, // not used for MovementBased
             elapsed_ticks: 0,
             animation_type: AnimationType::MovementBased,
             looping,
             is_done: false,
-            started_tick_id: None,
+            started_tick_id: 0,
         }
     }
 
@@ -68,36 +68,40 @@ impl SpriteAnimation {
         self.current_frame_index
     }
 
+    pub fn set_frame_id(&mut self, frame_id: usize) {
+        self.current_frame_index = frame_id;
+    }
+
     pub fn current_frame(&self) -> &Frame {
         &self.frames[self.current_frame_index]
     }
 
-    pub fn reset(&mut self) {
+    pub fn reset(&mut self, start_tick_id: usize) {
         self.current_frame_index = 0;
         self.is_done = false;
-        self.started_tick_id = None;
+        self.started_tick_id = start_tick_id;
     }
 
     pub fn has_started(&self) -> bool {
-        self.started_tick_id.is_some()
+        self.started_tick_id > 0
     }
 
-    pub fn started_tick(&self) -> Option<usize> {
+    pub fn started_tick(&self) -> usize {
         self.started_tick_id
     }
 
-    pub fn advance(&mut self, tick_delta: usize, moved: bool) {
+    pub fn advance(&mut self, tick_id: usize, moved: bool) {
         match self.animation_type {
             AnimationType::Static => (),
 
             AnimationType::TickBased => {
-                self.elapsed_ticks += tick_delta;
-                if self.elapsed_ticks >= self.default_frame_ticks {
-                    self.elapsed_ticks = 0;
+                self.elapsed_ticks = tick_id.saturating_sub(self.started_tick_id);
+                if self.elapsed_ticks > 0
+                    && self.elapsed_ticks.is_multiple_of(self.default_frame_ticks)
+                {
                     self.next_frame();
                 }
             }
-
             AnimationType::MovementBased => {
                 if moved {
                     self.next_frame();

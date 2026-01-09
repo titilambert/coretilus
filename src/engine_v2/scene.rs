@@ -23,7 +23,9 @@ impl Scene {
         // Hooks
         //self.hooks.process(&self.objects);
         for object in objects.iter() {
-            object.borrow_mut().update(tick_id, self.terminal_size);
+            if object.borrow().visible() {
+                object.borrow_mut().update(tick_id, self.terminal_size);
+            }
         }
         // collisions
         //for col in collisions.iter_mut() {
@@ -42,8 +44,8 @@ impl Scene {
                 object_borrow.input_actions.get(&key).map(|a| a as *const _)
             };
             if let Some(action_ptr) = maybe_action {
-                let action: &dyn Fn(&ObjectRef) = unsafe { &*action_ptr };
-                action(object);
+                let action: &dyn Fn(ObjectRef) = unsafe { &*action_ptr };
+                action(object.clone()); // ✅ Clone le Rc et passe par valeur
             }
         }
     }
@@ -107,6 +109,9 @@ impl Scene {
             let frame = object.current_frame();
             //let object_y = object_mut.coords().y().clone();
 
+            if !object.visible() {
+                continue;
+            }
             // Prepare printing
             for (dy, line) in frame.get_lines().iter().rev().enumerate() {
                 let screen_y = self.terminal_size.height() as i32 - 1 - (object_y + dy as i32);

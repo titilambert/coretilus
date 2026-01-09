@@ -16,7 +16,7 @@ use std::borrow::Cow;
 /// let frame2 = Frame::new_ticks("Hello, world!", 200);
 /// assert_eq!(frame2.ticks(), 200);
 /// ```
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Frame {
     ascii: Cow<'static, str>,
     // Number of ticks to keep this frame showed

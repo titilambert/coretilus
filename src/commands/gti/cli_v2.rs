@@ -84,8 +84,8 @@ impl CommandV2 for Gti {
         (objects, collisions)
     }
     fn execute(&mut self) {
-        let (mut objects, collisions) = self.select_objects(std::env::args());
-        let mut engine = Engine::new(&mut objects, collisions, 3000);
+        let (objects, collisions) = self.select_objects(std::env::args());
+        let mut engine = Engine::new(objects, collisions, 3000);
         engine.run();
     }
 }
@@ -102,7 +102,7 @@ mod tests {
         let args: Vec<String> = vec![String::from("gti")];
         let (objects, collisions) = gti.select_objects(args.into_iter());
 
-        assert_eq!(objects[0].borrow().movement().speed(), 2);
+        assert_eq!(objects[0].borrow_mut().movement().speed(), 2);
         assert_eq!(objects[0].borrow().tdid(), 9);
         assert_eq!(collisions.len(), 1);
     }

@@ -111,6 +111,9 @@ impl Movement {
     }
 
     pub fn get_coordinate(&self, _tick_id: usize) -> Coords {
+        if self.path.is_empty() {
+            panic!("Object has no movement defined");
+        }
         if self.current_coordinate_id >= self.path.len() {
             return self.path[self.path.len() - 1];
         }
@@ -171,6 +174,14 @@ impl Movement {
             }
         }
         extended_path
+    }
+
+    pub fn add_offset(&mut self, coord: Coords) {
+        self.offset = self.offset + coord;
+    }
+
+    pub fn offset(&self) -> Coords {
+        self.offset
     }
 
     pub fn advance(&mut self, tick_id: usize, terminal_size: Size, sprite_size: Size) {
@@ -263,32 +274,43 @@ fn bresenham_path(start: Coords, end: Coords) -> Vec<Coords> {
     let step_y = if start.y() < end.y() { 1 } else { -1 };
     let step_z = if start.z() < end.z() { 1 } else { -1 };
 
-    // FIXME better handle z
-    let mut error = delta_x - delta_y;
-
     let mut current = start;
 
-    loop {
+    // Trouver la dimension dominante
+    let max_delta = delta_x.max(delta_y).max(delta_z);
+
+    if max_delta == 0 {
+        // Start == End
+        points.push(current);
+        return points;
+    }
+
+    let mut error_x = max_delta / 2;
+    let mut error_y = max_delta / 2;
+    let mut error_z = max_delta / 2;
+
+    for _ in 0..=max_delta {
         points.push(current);
 
         if current.x() == end.x() && current.y() == end.y() && current.z() == end.z() {
             break;
         }
 
-        let error2 = 2 * error;
-
-        if error2 > -delta_y {
-            error -= delta_y;
+        error_x += delta_x;
+        if error_x >= max_delta {
+            error_x -= max_delta;
             current.set_x(current.x() + step_x);
         }
 
-        if error2 < delta_x {
-            error += delta_x;
+        error_y += delta_y;
+        if error_y >= max_delta {
+            error_y -= max_delta;
             current.set_y(current.y() + step_y);
         }
 
-        if error2 < delta_z {
-            error += delta_z;
+        error_z += delta_z;
+        if error_z >= max_delta {
+            error_z -= max_delta;
             current.set_z(current.z() + step_z);
         }
     }

@@ -32,10 +32,12 @@ pub struct Engine {
     stop_on_sigint: bool,
     objects: Vec<ObjectRef>,
     collisions: Vec<Collision>,
+    killed: bool,
+    must_stop: bool,
 }
 
 impl Engine {
-    pub fn new(objects: &mut Vec<ObjectRef>, collisions: Vec<Collision>, ttl: usize) -> Self {
+    pub fn new(objects: Vec<ObjectRef>, collisions: Vec<Collision>, ttl: usize) -> Self {
         let terminal_size = get_terminal_size();
         Self {
             scene: Scene::new(terminal_size),
@@ -46,11 +48,29 @@ impl Engine {
             stop_on_sigint: true,
             objects: objects.to_owned(),
             collisions,
+            killed: false,
+            must_stop: false,
         }
     }
 
+    pub fn tick_id(&self) -> usize {
+        self.tick_id
+    }
+
+    pub fn terminal_size(&self) -> Size {
+        self.terminal_size
+    }
+
+    pub fn is_killed(&self) -> bool {
+        self.killed
+    }
+
     pub fn stop(&mut self) {
-        self.ttl = 1;
+        self.must_stop = true;
+    }
+
+    pub fn objects_mut(&mut self) -> &mut Vec<ObjectRef> {
+        &mut self.objects
     }
 
     pub fn run(&mut self) {
@@ -62,7 +82,6 @@ impl Engine {
 
         // calculate the duration of a single tick
         self.tick_id = 0;
-        let mut killed = false;
 
         for object in self.objects.iter() {
             object
@@ -77,6 +96,10 @@ impl Engine {
                 break;
             }
 
+            if self.must_stop {
+                break;
+            }
+
             while poll(Duration::from_millis(0)).unwrap() {
                 if let Event::Key(key_event) = read().unwrap() {
                     match key_event.code {
@@ -84,7 +107,7 @@ impl Engine {
                             if key_event.modifiers.contains(KeyModifiers::CONTROL) =>
                         {
                             if self.stop_on_sigint {
-                                killed = true;
+                                self.killed = true;
                                 break;
                             }
                         }
@@ -94,7 +117,7 @@ impl Engine {
                     }
                 }
             }
-            if killed {
+            if self.killed {
                 break;
             }
 
