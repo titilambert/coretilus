@@ -15,7 +15,7 @@ use std::ops::Add;
 /// assert_eq!(coord3.x(), 7);
 /// assert_eq!(coord3.y(), 8);
 /// ```
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Coord {
     x: i32,
     y: i32,

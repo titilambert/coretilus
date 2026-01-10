@@ -31,10 +31,12 @@ jobs:
         run: rustup component add --toolchain nightly-2025-10-12-x86_64-unknown-linux-gnu rustfmt clippy
       - name: pre-commit
         uses: j178/prek-action@v1
+      - name: Install cargo-llvm-cov
+        run: cargo install cargo-llvm-cov
       - name: Test Build
         env:
           RUSTFLAGS: "-C target-feature=+crt-static"
-        run: cargo install cargo-llvm-cov && cargo build
+        run: cargo build
       - name: Run tests with coverage
         run: cargo llvm-cov --doctests --verbose --lcov --output-path lcov.info
       # TODO codecov
