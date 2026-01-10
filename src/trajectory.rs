@@ -9,6 +9,7 @@ use crate::sprite::SpriteRef;
 pub enum Direction {
     Linear,
     Stationary,
+    Circular,
     Relative,
     None,
 }
@@ -31,6 +32,7 @@ pub struct Trajectory {
     ttl: usize, // Number of tick to live, 0 means infinite
     parent_sprite: Option<SpriteRef>,
     started_tick_id: Option<usize>,
+    radius: usize,
 }
 
 impl Trajectory {
@@ -50,6 +52,7 @@ impl Trajectory {
             ttl: 0,
             parent_sprite: None,
             started_tick_id: None,
+            radius: 0,
         }
     }
 
@@ -66,9 +69,26 @@ impl Trajectory {
             ttl: 0,
             parent_sprite: None,
             started_tick_id: None,
+            radius: 0,
         }
     }
 
+    pub fn new_circular(start: Position, end: Position, speed: i32, radius: usize) -> Self {
+        Self {
+            current_coordinate_id: 0,
+            path: vec![],
+            start,
+            end,
+            direction: Direction::Circular,
+            speed,
+            is_done: false,
+            offset: Coord::new(0, 0),
+            ttl: 0,
+            parent_sprite: None,
+            started_tick_id: None,
+            radius,
+        }
+    }
     pub fn new_stationary(position: Position, ttl: usize) -> Self {
         Self {
             current_coordinate_id: 0,
@@ -82,6 +102,7 @@ impl Trajectory {
             ttl,
             parent_sprite: None,
             started_tick_id: None,
+            radius: 0,
         }
     }
 
@@ -98,6 +119,7 @@ impl Trajectory {
             ttl: 0,
             parent_sprite: Some(sprite),
             started_tick_id: None,
+            radius: 0,
         }
     }
 
@@ -161,6 +183,10 @@ impl Trajectory {
             let start_tick = self.started_tick_id.unwrap();
             self.is_done = tick_id - start_tick >= self.path.len();
         }
+        if self.direction() == Direction::Circular {
+            let start_tick = self.started_tick_id.unwrap();
+            self.is_done = tick_id - start_tick >= self.path.len();
+        }
     }
 
     pub fn compute_path(&mut self, terminal_size: Size, sprite_size: Size) {
@@ -191,6 +217,14 @@ impl Trajectory {
                     path = stationary_path(start_coord, self.ttl);
                 }
                 path
+            }
+            Direction::Circular => {
+                let path = arc_path(
+                    self.start.resolve(terminal_size, sprite_size),
+                    self.end.resolve(terminal_size, sprite_size),
+                    self.radius as i32,
+                );
+                self.add_speed(path)
             }
             _ => vec![],
         };
@@ -252,6 +286,39 @@ fn stationary_path(position: Coord, ttl: usize) -> Vec<Coord> {
     }
     points
 }
+
+/// Génère un chemin discret le long d'un arc de cercle
+/// Le centre est le milieu entre start et end
+/// `radius` = rayon de la courbure (hauteur maximale de l'arc)
+pub fn arc_path(start: Coord, end: Coord, radius: i32) -> Vec<Coord> {
+    let mut path = Vec::new();
+
+    // Vecteur start→end
+    let dx = end.x() - start.x();
+    let dy = end.y() - start.y();
+
+    // Nombre de steps = distance max
+    let steps = dx.abs().max(dy.abs()).max(1);
+
+    for i in 0..=steps {
+        let t = i as f32 / steps as f32;
+
+        // Paramètre quadratique pour faire la courbure (sommet au milieu)
+        let curve = 4.0 * t * (1.0 - t); // varie de 0 → 1 → 0
+
+        let x = start.x() as f32 + dx as f32 * t;
+        let y = start.y() as f32 + dy as f32 * t + curve * radius as f32;
+
+        let coord = Coord::new(x.round() as i32, y.round() as i32);
+
+        if path.last().copied() != Some(coord) {
+            path.push(coord);
+        }
+    }
+
+    path
+}
+
 fn bresenham_path(start: Coord, end: Coord) -> Vec<Coord> {
     let mut points = Vec::new();
 
