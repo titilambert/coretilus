@@ -1,10 +1,11 @@
-use crate::{collision::Collision, sprite::SpriteRef};
+use crate::engine_v2::collision::Collision;
+use crate::engine_v2::entity::object::ObjectRef;
 use std::any::type_name;
 
 #[cfg(unix)]
 use crate::signal;
 
-pub trait Command {
+pub trait CommandV2 {
     // Default implementation
     fn name(&self) -> String {
         let full = type_name::<Self>();
@@ -19,10 +20,10 @@ pub trait Command {
 
     fn execute(&mut self);
 
-    fn get_all_sprites(&self) -> Vec<fn() -> SpriteRef>;
+    fn get_all_objects(&self) -> Vec<fn() -> ObjectRef>;
 
-    fn select_sprites(
+    fn select_objects(
         &mut self,
         args: impl Iterator<Item = String>,
-    ) -> (Vec<SpriteRef>, Vec<Collision>);
+    ) -> (Vec<ObjectRef>, Vec<Collision>);
 }

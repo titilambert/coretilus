@@ -19,7 +19,7 @@ repos:
     hooks:
       - id: fmt
         name: Format with rustfmt
-        args: ["--manifest-path", "Cargo.toml", "--", "--check"]
+        args: ["--manifest-path", "Cargo.toml", "--"]
       - id: cargo-check
         name: Check compilation
         args: ["--all-features"]
