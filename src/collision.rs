@@ -1,7 +1,9 @@
-use crate::{coord::Coord, engine::Size};
+use crate::coord::Coord;
+use crate::engine::Size;
 use std::rc::Rc;
 
-use crate::{engine::RenderEngine, sprite::SpriteRef};
+use crate::engine::RenderEngine;
+use crate::sprite::SpriteRef;
 
 pub fn process_collisions(engine: &mut RenderEngine, collisions: &mut [Collision]) {
     for col in collisions.iter_mut() {
@@ -187,7 +189,9 @@ impl Collision {
 #[cfg(test)]
 mod tests {
     use crate::animation::Animation;
-    use crate::coord::{Position, XTermPosition, YTermPosition};
+    use crate::coord::Position;
+    use crate::coord::XTermPosition;
+    use crate::coord::YTermPosition;
     use crate::engine::Size;
     use crate::frame::Frame;
     use crate::sprite::Sprite;

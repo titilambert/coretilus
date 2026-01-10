@@ -4,12 +4,17 @@ use std::rc::Rc;
 
 use crossterm::event::KeyCode;
 
-use crate::animation::{Animation, AnimationKind};
+use crate::animation::Animation;
+use crate::animation::AnimationKind;
 use crate::collision::Collider;
-use crate::coord::{Coord, Position, XTermPosition, YTermPosition};
+use crate::coord::Coord;
+use crate::coord::Position;
+use crate::coord::XTermPosition;
+use crate::coord::YTermPosition;
 use crate::engine::Size;
 use crate::frame::Frame;
-use crate::trajectory::{Direction, Trajectory};
+use crate::trajectory::Direction;
+use crate::trajectory::Trajectory;
 use uuid::Uuid;
 
 pub type SpriteRef = Rc<RefCell<Sprite>>;

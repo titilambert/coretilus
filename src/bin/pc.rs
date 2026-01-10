@@ -1,5 +1,5 @@
-use coretilus::command::Command;
-use coretilus::commands::pc::cli::Pc;
+use coretilus::command::CommandV2;
+use coretilus::commands::pc::cli_v2::Pc;
 
 fn main() {
     let mut pc = Pc {};
