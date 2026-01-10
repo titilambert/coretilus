@@ -37,8 +37,8 @@ pub fn get_object_mini() -> ObjectRef {
     ];
 
     let collider = Collider::new(
-        Coords::new(-1, 1, 0),
-        Size::new(frames[0].get_width() + 1, frames[0].get_height() - 1),
+        Coords::new(0, 1, 0),
+        Size::new(frames[0].get_width(), frames[0].get_height() - 1),
         true,
     );
     let anim = SpriteAnimation::new_movement_based(frames, true);
@@ -58,8 +58,10 @@ pub fn get_object_std() -> ObjectRef {
         Frame::new(FRAME_STD3),
     ];
     let collider = Collider::new(
-        Coords::new(-1, 1, 0),
-        Size::new(frames[0].get_width() + 1, frames[0].get_height() - 1),
+        Coords::new(0, 1, 0),
+        Size::new(frames[0].get_width(), frames[0].get_height() - 1),
+        //Coords::new(-1, 2, 0),
+        //Size::new(frames[0].get_width() + 1, frames[0].get_height() - 1),
         true,
     );
     let anim = SpriteAnimation::new_movement_based(frames, true);

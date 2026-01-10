@@ -45,6 +45,10 @@ impl Collider {
 /// Represents the different edges of the screen that can be used for collision detection.
 #[derive(Clone)]
 pub enum ScreenEdge {
+    Bottom,
+    Top,
+    Left,
+    Right,
     /// The top edge of the screen aligned with the object's top side.
     TopWithObjectTopSide,
     /// The top edge of the screen aligned with the object's bottom side.
@@ -65,6 +69,7 @@ pub enum ScreenEdge {
 
 type SpriteCollisionCallback = Box<dyn FnMut(&ObjectRef, &ObjectRef, usize, &mut Engine)>;
 type EdgeCollisionCallback = Box<dyn FnMut(&ObjectRef, usize, &mut Engine)>;
+type PointCollisionCallback = Box<dyn FnMut(&ObjectRef, &Coords, usize, &mut Engine)>;
 
 pub enum Collision {
     Object {
@@ -79,10 +84,16 @@ pub enum Collision {
         counter: usize,
         callback: EdgeCollisionCallback,
     },
+    Point {
+        a: ObjectRef,
+        c: Coords,
+        counter: usize,
+        callback: PointCollisionCallback,
+    },
 }
 
 impl Collision {
-    pub fn new_sprite(
+    pub fn new_object(
         a: ObjectRef,
         b: ObjectRef,
         callback: impl FnMut(&ObjectRef, &ObjectRef, usize, &mut Engine) + 'static,
@@ -108,10 +119,24 @@ impl Collision {
         }
     }
 
+    pub fn new_point(
+        a: ObjectRef,
+        c: Coords,
+        callback: impl FnMut(&ObjectRef, &Coords, usize, &mut Engine) + 'static,
+    ) -> Self {
+        Collision::Point {
+            a,
+            c,
+            counter: 0,
+            callback: Box::new(callback),
+        }
+    }
+
     pub fn counter(&self) -> usize {
         match self {
             Collision::Object { counter, .. } => *counter,
             Collision::Edge { counter, .. } => *counter,
+            Collision::Point { counter, .. } => *counter,
         }
     }
 
@@ -156,26 +181,35 @@ impl Collision {
                 let a_min = a_collider.min(a_coords);
                 let a_max = a_collider.max(a_coords);
 
-                //if a_max.x() < 1 {
-                //    panic!("EEE {}", a_max.x());
-                //}
-
+                let terminal_height = terminal_size.height() as i32;
+                let terminal_width = terminal_size.width() as i32;
                 match b {
+                    ScreenEdge::Bottom => a_min.y() <= 0 && a_max.y() >= 0,
                     ScreenEdge::BottomWithObjectBottomSide => a_min.y() == 0,
                     ScreenEdge::BottomWithObjectTopSide => a_max.y() == 0,
+                    ScreenEdge::Left => a_min.x() <= 0 && a_max.x() >= 0,
                     ScreenEdge::LeftWithObjectLeftSide => a_min.x() == 0,
                     ScreenEdge::LeftWithObjectRightSide => a_max.x() == 0,
-                    ScreenEdge::TopWithObjectTopSide => a_max.y() == terminal_size.height() as i32,
-                    ScreenEdge::TopWithObjectBottomSide => {
-                        a_max.x() == terminal_size.height() as i32
-                    }
-                    ScreenEdge::RightWithObjectRightSide => {
-                        a_max.x() == terminal_size.width() as i32
-                    }
-                    ScreenEdge::RightWithObjectLeftSide => {
-                        a_min.x() == terminal_size.width() as i32
-                    }
+                    ScreenEdge::Top => a_min.y() <= terminal_height && a_max.y() >= terminal_height,
+                    ScreenEdge::TopWithObjectTopSide => a_max.y() == terminal_height,
+                    ScreenEdge::TopWithObjectBottomSide => a_min.y() == terminal_height,
+                    ScreenEdge::Right => a_min.x() <= terminal_width && a_max.x() >= terminal_width,
+                    ScreenEdge::RightWithObjectRightSide => a_max.x() == terminal_width,
+                    ScreenEdge::RightWithObjectLeftSide => a_min.x() == terminal_width,
                 }
+            }
+            Collision::Point { a, c, .. } => {
+                if !a.borrow_mut().collider().is_active() {
+                    return false;
+                }
+                let (a_coords, a_collider) = {
+                    let a = a.borrow_mut();
+                    (a.coords(), *a.collider())
+                };
+                let a_min = a_collider.min(a_coords);
+                let a_max = a_collider.max(a_coords);
+
+                c.x() >= a_min.x() && c.x() <= a_max.x() && c.y() >= a_min.y() && c.y() <= a_max.y()
             }
         }
     }
@@ -199,6 +233,16 @@ impl Collision {
             } => {
                 *counter += 1;
                 (callback)(a, *counter, engine);
+            }
+            Collision::Point {
+                a,
+                c,
+                counter,
+                callback,
+                ..
+            } => {
+                *counter += 1;
+                (callback)(a, c, *counter, engine);
             }
         }
     }

@@ -23,9 +23,7 @@ impl Scene {
         // Hooks
         //self.hooks.process(&self.objects);
         for object in objects.iter() {
-            if object.borrow().visible() {
-                object.borrow_mut().update(tick_id, self.terminal_size);
-            }
+            object.borrow_mut().update(tick_id, self.terminal_size);
         }
         // collisions
         //for col in collisions.iter_mut() {

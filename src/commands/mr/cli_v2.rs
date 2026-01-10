@@ -43,6 +43,7 @@ impl CommandV2 for Mr {
         let landed_clone = self.landed.clone();
         let retry_clone = self.retry.clone();
         let mut object_list: Vec<ObjectRef> = Vec::new();
+        let rocket_speed: usize = 20;
 
         let short_flags = ['f', 'r'];
         let long_flags = ["force", "recursive"];
@@ -113,7 +114,7 @@ impl CommandV2 for Mr {
         let movement = Movement::new_linear(
             Position::new(XTermPosition::Middle, YTermPosition::TopOut, 0),
             Position::new(XTermPosition::Middle, YTermPosition::Coord(-2), 0),
-            20,
+            rocket_speed as i32,
         );
         rocket_object.borrow_mut().set_movement(movement);
         object_list.push(rocket_object.clone());
@@ -150,7 +151,7 @@ impl CommandV2 for Mr {
         let mut collision_list: Vec<Collision> = Vec::new();
 
         // Rocket collision with spaceport
-        let collision = Collision::new_sprite(
+        let collision = Collision::new_object(
             rocket_object.clone(),
             spaceport_object.clone(),
             move |rocket_object, _, counter, engine| {
@@ -180,9 +181,9 @@ impl CommandV2 for Mr {
         // Rocket Collision with bottom of the screen
         let collision_bottom = Collision::new_edge(
             rocket_object.clone(),
-            ScreenEdge::BottomWithObjectBottomSide,
+            ScreenEdge::Bottom,
             move |rocket_object, counter, engine| {
-                if rocket_object.borrow().visible() {
+                if rocket_object.borrow().visible() && counter > rocket_speed {
                     rocket_object.borrow_mut().set_visible(false);
                     let rocket_coord = rocket_object.borrow_mut().coords();
                     let explosion_position = Movement::new_stationary(
@@ -215,7 +216,7 @@ impl CommandV2 for Mr {
                     } else {
                         failed_sign_object.borrow_mut().set_visible(true);
                     }
-                } else if counter == 500 {
+                } else if counter > 500 {
                     engine.stop();
                 }
             },

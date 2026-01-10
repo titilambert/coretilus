@@ -34,6 +34,7 @@ pub struct Movement {
     parent_object: Option<ObjectRef>,
     started_tick_id: Option<usize>,
     radius: usize,
+    active: bool,
 }
 
 impl Movement {
@@ -59,6 +60,7 @@ impl Movement {
             parent_object: None,
             started_tick_id: None,
             radius: 0,
+            active: true,
         }
     }
 
@@ -76,6 +78,7 @@ impl Movement {
             parent_object: None,
             started_tick_id: None,
             radius: 0,
+            active: true,
         }
     }
 
@@ -93,6 +96,7 @@ impl Movement {
             parent_object: None,
             started_tick_id: None,
             radius: 0,
+            active: true,
         }
     }
 
@@ -110,6 +114,7 @@ impl Movement {
             parent_object: Some(object),
             started_tick_id: None,
             radius: 0,
+            active: true,
         }
     }
 
@@ -127,6 +132,18 @@ impl Movement {
 
     pub fn started_tick(&self) -> Option<usize> {
         self.started_tick_id
+    }
+
+    pub fn is_active(&self) -> bool {
+        self.active
+    }
+
+    pub fn deactivate(&mut self) {
+        self.active = false;
+    }
+
+    pub fn activate(&mut self) {
+        self.active = true;
     }
 
     pub fn get_coordinate(&self, _tick_id: usize) -> Coords {

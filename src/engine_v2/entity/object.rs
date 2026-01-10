@@ -108,7 +108,9 @@ impl Object {
 
     pub fn update(&mut self, tick_id: usize, terminal_size: Size) {
         let sprite = &mut self.sprites[self.active_sprite];
-        self.movement.advance(tick_id, terminal_size, sprite.size());
+        if self.movement.is_active() {
+            self.movement.advance(tick_id, terminal_size, sprite.size());
+        }
         self.coords_history.push(self.coords);
 
         let tdid = self.tdid; // Capturer avant le catch_unwind
@@ -147,6 +149,18 @@ impl Object {
 
     pub fn movement(&mut self) -> &mut Movement {
         &mut self.movement
+    }
+
+    pub fn is_movement_active(&self) -> bool {
+        self.movement.is_active()
+    }
+
+    pub fn deactivate_movement(&mut self) {
+        self.movement.deactivate();
+    }
+
+    pub fn activate_movement(&mut self) {
+        self.movement.activate();
     }
 
     // Animation
