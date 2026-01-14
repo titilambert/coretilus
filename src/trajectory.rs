@@ -144,7 +144,7 @@ impl Trajectory {
     }
 
     pub fn is_done(&self) -> bool {
-        print!(
+        println!(
             "FFFFFFFFFF {} {} {}\n",
             self.is_done,
             self.has_started(),

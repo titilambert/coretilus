@@ -87,6 +87,11 @@ impl Object {
     pub fn set_coords(&mut self, coords: Coords) {
         self.coords = coords;
     }
+
+    pub fn coords_history(&self) -> Vec<Coords> {
+        self.coords_history.clone()
+    }
+
     // Sprites
     pub fn sprite(&mut self) -> &Sprite {
         &self.sprites[self.active_sprite]
@@ -106,29 +111,48 @@ impl Object {
         Size::new(frame.get_width(), frame.get_height())
     }
 
+    pub fn get_occupied_coords(&self, skip_space: bool) -> Vec<Coords> {
+        let frame = self.current_frame();
+        let current_x = self.coords().x();
+        let current_y = self.coords().y();
+        let current_z = self.coords().z();
+        let mut occupied_coords = Vec::new();
+        for x in 0..frame.get_width() as i32 {
+            for y in 0..frame.get_height() as i32 {
+                if let Some(c) = frame.get_character(x, y)
+                    && (c != ' ' || !skip_space)
+                {
+                    occupied_coords.push(Coords::new(current_x + x, current_y + y, current_z));
+                }
+            }
+        }
+        occupied_coords
+    }
+
     pub fn update(&mut self, tick_id: usize, terminal_size: Size) {
         let sprite = &mut self.sprites[self.active_sprite];
+        let mut moved = false;
         if self.movement.is_active() {
             self.movement.advance(tick_id, terminal_size, sprite.size());
-        }
-        self.coords_history.push(self.coords);
+            self.coords_history.push(self.coords);
 
-        let tdid = self.tdid; // Capturer avant le catch_unwind
-        let result = panic::catch_unwind(panic::AssertUnwindSafe(|| {
-            self.movement.get_coordinate(tick_id)
-        }));
+            let tdid = self.tdid; // Capturer avant le catch_unwind
+            let result = panic::catch_unwind(panic::AssertUnwindSafe(|| {
+                self.movement.get_coordinate(tick_id)
+            }));
 
-        self.coords = match result {
-            Ok(coords) => coords,
-            Err(_) => {
-                panic!("Can not find coords for tdid: {}", tdid);
+            self.coords = match result {
+                Ok(coords) => coords,
+                Err(_) => {
+                    panic!("Can not find coords for tdid: {}", tdid);
+                }
+            };
+
+            moved = true;
+            if !self.coords_history.is_empty() {
+                moved = (self.coords.x() != self.coords_history[self.coords_history.len() - 1].x())
+                    || (self.coords.y() != self.coords_history[self.coords_history.len() - 1].y());
             }
-        };
-
-        let mut moved = true;
-        if !self.coords_history.is_empty() {
-            moved = self.coords.x() != (self.coords_history[self.coords_history.len() - 1].x())
-                || (self.coords.y() != self.coords_history[self.coords_history.len() - 1].y());
         }
         sprite.advance(tick_id, moved);
     }
@@ -169,8 +193,8 @@ impl Object {
     }
 
     // Collision
-    pub fn collider(&self) -> &Collider {
-        &self.collider
+    pub fn collider(&mut self) -> &mut Collider {
+        &mut self.collider
     }
 
     // Visible

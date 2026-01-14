@@ -164,6 +164,10 @@ impl Movement {
         self.active = true;
     }
 
+    pub fn is_done(&self) -> bool {
+        self.is_done
+    }
+
     pub fn get_coordinate(&self, _tick_id: usize) -> Coords {
         match self.direction {
             Direction::Relative => {
@@ -181,7 +185,7 @@ impl Movement {
                     panic!("Object has no movement defined");
                 }
                 if self.current_coordinate_id >= self.path.len() {
-                    return self.path[self.path.len() - 1];
+                    return self.path[self.path.len() - 1] + self.offset();
                 }
                 self.path[self.current_coordinate_id] + self.offset
             }
@@ -250,6 +254,10 @@ impl Movement {
 
     pub fn offset(&self) -> Coords {
         self.offset
+    }
+
+    pub fn reset_offset(&mut self) {
+        self.offset = Coords::new(0, 0, 0);
     }
 
     pub fn advance(&mut self, tick_id: usize, terminal_size: Size, sprite_size: Size) {

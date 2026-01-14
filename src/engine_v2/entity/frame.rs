@@ -52,6 +52,18 @@ impl Frame {
         &self.ascii
     }
 
+    pub fn get_character(&self, x: i32, y: i32) -> Option<char> {
+        let lines = self.get_lines();
+        if y < 0 || y >= lines.len() as i32 {
+            return None;
+        }
+        let line = lines[y as usize].as_str();
+        if x < 0 || x >= line.chars().count() as i32 {
+            return None;
+        }
+        Some(line.chars().nth(x as usize).unwrap())
+    }
+
     /// Returns the number of ticks that this frame should be displayed for.
     pub fn ticks(&self) -> usize {
         self.ticks

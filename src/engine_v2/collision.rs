@@ -151,11 +151,11 @@ impl Collision {
                     return false;
                 }
                 let (a_coords, a_collider) = {
-                    let a = a.borrow_mut();
+                    let mut a = a.borrow_mut();
                     (a.coords(), *a.collider())
                 };
                 let (b_coords, b_collider) = {
-                    let b = b.borrow_mut();
+                    let mut b = b.borrow_mut();
                     (b.coords(), *b.collider())
                 };
                 let a_min = a_collider.min(a_coords);
@@ -174,7 +174,7 @@ impl Collision {
                 }
 
                 let (a_coords, a_collider) = {
-                    let a = a.borrow_mut();
+                    let mut a = a.borrow_mut();
                     (a.coords(), *a.collider())
                 };
 
@@ -203,7 +203,7 @@ impl Collision {
                     return false;
                 }
                 let (a_coords, a_collider) = {
-                    let a = a.borrow_mut();
+                    let mut a = a.borrow_mut();
                     (a.coords(), *a.collider())
                 };
                 let a_min = a_collider.min(a_coords);

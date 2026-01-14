@@ -26,13 +26,6 @@ impl Scene {
             object.borrow_mut().update(tick_id, self.terminal_size);
         }
         // collisions
-        //for col in collisions.iter_mut() {
-        //    if col.is_colliding(self.terminal_size) {
-        //        col.trigger(self);
-        //    }
-        //}
-        // Hooks
-        //self.hooks.process(&self.objects);
     }
 
     pub fn handle_input(&self, key: KeyCode, objects: &mut [ObjectRef]) {
@@ -58,79 +51,8 @@ impl Scene {
 
         // Order objects by z-coordinate
         objects.sort_by_key(|object| object.borrow().coords().z());
-        /*panic!(
-            "{} - {} - {}\n{}- {}\n{} - {} - {}\n{} - {} - {}\n{} - {} - {}\n{} - {} - {}\n{}- {}\n{}- {}\n{}- {}\n{}- {}\n",
-            objects.len(),
-            objects[0].borrow().tdid(),
-            objects[0].borrow().coords().z(),
-            objects[1].borrow().tdid(),
-            objects[1].borrow().coords().z(),
-            objects[2].borrow().tdid(),
-            objects[2].borrow().coords().x(),
-            objects[2].borrow().coords().z(),
-            objects[3].borrow().tdid(),
-            objects[3].borrow().coords().x(),
-            objects[3].borrow().coords().z(),
-            objects[4].borrow().tdid(),
-            objects[4].borrow().coords().x(),
-            objects[4].borrow().coords().z(),
-            objects[5].borrow().tdid(),
-            objects[5].borrow().coords().x(),
-            objects[5].borrow().coords().z(),
-            objects[6].borrow().tdid(),
-            objects[6].borrow().coords().z(),
-            objects[7].borrow().tdid(),
-            objects[7].borrow().coords().z(),
-            objects[8].borrow().tdid(),
-            objects[8].borrow().coords().z(),
-            objects[9].borrow().tdid(),
-            objects[9].borrow().coords().z(),
-        );*/
 
         for objectref in objects.iter() {
-            /*
-            sprite.compute_path(self.terminal_size);
-            if !sprite.is_visible() {
-                continue;
-            }
-
-            sprite.advance(tick_id, self.terminal_size);
-            let frame = sprite.animation().frame();
-
-            let sprite_coord = sprite.current_coordinate();
-
-            let sprite_x = sprite_coord.x();
-            let sprite_y = sprite_coord.y();
-
-            // Prepare printing
-            for (dy, line) in frame.get_lines().iter().rev().enumerate() {
-                let screen_y = self.terminal_size.height as i32 - 1 - (sprite_y + dy as i32);
-                // Above the screen
-                if screen_y >= self.terminal_size.height as i32 {
-                    continue;
-                }
-                // Below the screen
-                if screen_y < 0 {
-                    continue;
-                }
-                let chars: Vec<char> = line.chars().collect();
-                for (dx, &char) in chars.iter().enumerate() {
-                    let screen_x = sprite_x + dx as i32;
-                    // On the right of the screen
-                    if screen_x >= self.terminal_size.width() as i32 {
-                        continue;
-                    }
-                    // On the left of the screen
-                    if screen_x < 0 {
-                        continue;
-                    }
-
-                    if char != ' ' {
-                        screen[screen_y as usize][screen_x as usize] = char;
-                    }
-                }
-            }*/
-
             let object = objectref.borrow();
             let object_x = object.coords().x();
             let object_y = object.coords().y();
