@@ -20,7 +20,7 @@ const FRAME_COMMIT3: &str = include_str!("frames/commit3.adoc");
 pub fn get_object_std() -> ObjectRef {
     let frames = vec![Frame::new(FRAME_STD1), Frame::new(FRAME_STD2)];
     let anim = SpriteAnimation::new_movement_based(frames, true);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
 
     Object::new(9, String::from("Golf GTI"), vec![sprite], None)
 }
@@ -28,14 +28,14 @@ pub fn get_object_std() -> ObjectRef {
 pub fn get_object_pull() -> ObjectRef {
     let frames = vec![Frame::new(FRAME_PULL1), Frame::new(FRAME_PULL2)];
     let anim = SpriteAnimation::new_movement_based(frames, true);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(10, String::from("Golf GTI pulled"), vec![sprite], None)
 }
 
 pub fn get_object_push() -> ObjectRef {
     let frames = vec![Frame::new(FRAME_PUSH1), Frame::new(FRAME_PUSH2)];
     let anim = SpriteAnimation::new_movement_based(frames, true);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
 
     Object::new(11, String::from("Golf GTI pushed"), vec![sprite], None)
 }
@@ -46,8 +46,8 @@ pub fn get_object_tag() -> ObjectRef {
         Frame::new(FRAME_TAG2),
         Frame::new(FRAME_TAG3),
     ];
-    let anim = SpriteAnimation::new_tick_based(frames, 20, true, None);
-    let sprite = Sprite::new(anim);
+    let anim = SpriteAnimation::new_tick_based(frames, 20, true, None, false, false);
+    let sprite = Sprite::new(anim, true);
 
     Object::new(12, String::from("Golf GTI tagged"), vec![sprite], None)
 }
@@ -58,8 +58,8 @@ pub fn get_object_commit() -> ObjectRef {
         Frame::new(FRAME_COMMIT2),
         Frame::new(FRAME_COMMIT3),
     ];
-    let anim = SpriteAnimation::new_tick_based(frames, 20, true, None);
-    let sprite = Sprite::new(anim);
+    let anim = SpriteAnimation::new_tick_based(frames, 20, true, None, false, false);
+    let sprite = Sprite::new(anim, true);
 
     Object::new(13, String::from("Golf GTI commited"), vec![sprite], None)
 }

@@ -19,6 +19,8 @@ pub struct SpriteAnimation {
     looping: bool,
     is_done: bool,
     started_tick_id: usize,
+    only_when_movement_active: bool,
+    stop_after_movement: bool,
 }
 
 impl SpriteAnimation {
@@ -33,6 +35,8 @@ impl SpriteAnimation {
             looping: true,
             is_done: false,
             started_tick_id: 0,
+            only_when_movement_active: false,
+            stop_after_movement: false,
         }
     }
 
@@ -42,6 +46,8 @@ impl SpriteAnimation {
         frame_ticks: usize,
         looping: bool,
         start_frame_id: Option<usize>,
+        only_when_movement_active: bool,
+        stop_after_movement: bool,
     ) -> Self {
         let current_frame_index = start_frame_id.unwrap_or_default();
         Self {
@@ -53,6 +59,8 @@ impl SpriteAnimation {
             looping,
             is_done: false,
             started_tick_id: 0,
+            only_when_movement_active,
+            stop_after_movement,
         }
     }
 
@@ -67,6 +75,8 @@ impl SpriteAnimation {
             looping,
             is_done: false,
             started_tick_id: 0,
+            only_when_movement_active: true,
+            stop_after_movement: true,
         }
     }
 
@@ -96,11 +106,24 @@ impl SpriteAnimation {
         self.started_tick_id
     }
 
-    pub fn advance(&mut self, tick_id: usize, moved: bool) {
+    pub fn advance(
+        &mut self,
+        tick_id: usize,
+        moved_x: bool,
+        moved_y: bool,
+        is_movement_active: bool,
+        movement_ended: bool,
+    ) {
         match self.animation_type {
             AnimationType::Static => (),
 
             AnimationType::TickBased => {
+                if self.stop_after_movement && movement_ended {
+                    return;
+                }
+                if self.only_when_movement_active && !is_movement_active {
+                    return;
+                }
                 self.elapsed_ticks = tick_id.saturating_sub(self.started_tick_id);
                 if self.elapsed_ticks > 0
                     && self.elapsed_ticks.is_multiple_of(self.default_frame_ticks)
@@ -109,7 +132,7 @@ impl SpriteAnimation {
                 }
             }
             AnimationType::MovementBased => {
-                if moved {
+                if moved_x || moved_y {
                     self.next_frame();
                 }
             }

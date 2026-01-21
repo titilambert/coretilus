@@ -42,7 +42,7 @@ pub fn get_object_mini() -> ObjectRef {
         true,
     );
     let anim = SpriteAnimation::new_movement_based(frames, true);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(
         14,
         String::from("Rocket mini"),
@@ -65,13 +65,13 @@ pub fn get_object_std() -> ObjectRef {
         true,
     );
     let anim = SpriteAnimation::new_movement_based(frames, true);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(16, String::from("Rocket"), vec![sprite], Some(collider))
 }
 
 pub fn get_object_spaceport() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_SPACEPORT));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(18, String::from("Spaceport"), vec![sprite], None)
 }
 
@@ -88,32 +88,32 @@ pub fn get_object_explosion() -> ObjectRef {
         Frame::new(FRAME_EXPLOSION9),
         Frame::new(FRAME_EXPLOSION10),
     ];
-    let anim = SpriteAnimation::new_tick_based(frames.clone(), 40, false, None);
-    let sprite = Sprite::new(anim);
+    let anim = SpriteAnimation::new_tick_based(frames.clone(), 40, false, None, false, false);
+    let sprite = Sprite::new(anim, true);
     Object::new(19, String::from("Explosion"), vec![sprite], None)
 }
 
 pub fn get_object_sign_land() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_SIGN_LAND));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(20, String::from("Land rocket sign"), vec![sprite], None)
 }
 
 pub fn get_object_sign_success() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_SIGN_SUCCESS));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(21, String::from("Landed rocket sign"), vec![sprite], None)
 }
 
 pub fn get_object_sign_fail() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_SIGN_FAILED));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(22, String::from("Rocket crashed sign"), vec![sprite], None)
 }
 
 pub fn get_object_sign_tryagain() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_SIGN_TRYAGAIN));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
 
     Object::new(
         23,

@@ -5,15 +5,28 @@ use crate::engine_v2::size::Size;
 #[derive(Debug, Clone)]
 pub struct Sprite {
     animation: SpriteAnimation,
+    is_active: bool,
 }
 
 impl Sprite {
-    pub fn new(animation: SpriteAnimation) -> Self {
-        Self { animation }
+    pub fn new(animation: SpriteAnimation, is_active: bool) -> Self {
+        Self {
+            animation,
+            is_active,
+        }
     }
 
     pub fn current_frame(&self) -> &Frame {
         self.animation.current_frame()
+    }
+
+    // active
+    pub fn is_active(&self) -> bool {
+        self.is_active
+    }
+
+    pub fn set_activate(&mut self, state: bool) {
+        self.is_active = state;
     }
 
     // Frame related
@@ -33,7 +46,20 @@ impl Sprite {
         self.animation.set_frame_id(frame_id);
     }
 
-    pub fn advance(&mut self, tick_id: usize, moved: bool) {
-        self.animation.advance(tick_id, moved);
+    pub fn advance(
+        &mut self,
+        tick_id: usize,
+        moved_x: bool,
+        moved_y: bool,
+        is_movement_active: bool,
+        movement_ended: bool,
+    ) {
+        self.animation.advance(
+            tick_id,
+            moved_x,
+            moved_y,
+            is_movement_active,
+            movement_ended,
+        );
     }
 }
