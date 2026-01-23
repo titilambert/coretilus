@@ -70,6 +70,13 @@ pub enum ScreenEdge {
 type SpriteCollisionCallback = Box<dyn FnMut(&ObjectRef, &ObjectRef, usize, &mut Engine)>;
 type EdgeCollisionCallback = Box<dyn FnMut(&ObjectRef, usize, &mut Engine)>;
 type PointCollisionCallback = Box<dyn FnMut(&ObjectRef, &Coords, usize, &mut Engine)>;
+type LineCollisionCallback = Box<dyn FnMut(&ObjectRef, i32, &LineOrientation, usize, &mut Engine)>;
+
+#[derive(Debug)]
+pub enum LineOrientation {
+    Horizontal,
+    Vertical,
+}
 
 pub enum Collision {
     Object {
@@ -89,6 +96,13 @@ pub enum Collision {
         c: Coords,
         counter: usize,
         callback: PointCollisionCallback,
+    },
+    Line {
+        a: ObjectRef,
+        c: i32,
+        o: LineOrientation,
+        counter: usize,
+        callback: LineCollisionCallback,
     },
 }
 
@@ -132,11 +146,27 @@ impl Collision {
         }
     }
 
+    pub fn new_line(
+        a: ObjectRef,
+        c: i32,
+        o: LineOrientation,
+        callback: impl FnMut(&ObjectRef, i32, &LineOrientation, usize, &mut Engine) + 'static,
+    ) -> Self {
+        Collision::Line {
+            a,
+            c,
+            o,
+            counter: 0,
+            callback: Box::new(callback),
+        }
+    }
+
     pub fn counter(&self) -> usize {
         match self {
             Collision::Object { counter, .. } => *counter,
             Collision::Edge { counter, .. } => *counter,
             Collision::Point { counter, .. } => *counter,
+            Collision::Line { counter, .. } => *counter,
         }
     }
 
@@ -211,6 +241,28 @@ impl Collision {
 
                 c.x() >= a_min.x() && c.x() <= a_max.x() && c.y() >= a_min.y() && c.y() <= a_max.y()
             }
+            Collision::Line { a, c, o, .. } => {
+                if !a.borrow_mut().collider().is_active() {
+                    return false;
+                }
+                let (a_coords, a_collider) = {
+                    let a = a.borrow_mut();
+                    (a.coords(), *a.collider())
+                };
+                let a_min = a_collider.min(a_coords);
+                let a_max = a_collider.max(a_coords);
+                let toto = match o {
+                    LineOrientation::Horizontal => a_min.y() <= *c && a_max.y() >= *c,
+                    LineOrientation::Vertical => a_min.x() <= *c && a_max.x() >= *c,
+                };
+                if false {
+                    panic!(
+                        "GGGGG min {:#?} - max {:#?} - {}- {:#?}",
+                        a_min, a_max, c, o
+                    );
+                }
+                toto
+            }
         }
     }
 
@@ -243,6 +295,17 @@ impl Collision {
             } => {
                 *counter += 1;
                 (callback)(a, c, *counter, engine);
+            }
+            Collision::Line {
+                a,
+                c,
+                o,
+                counter,
+                callback,
+                ..
+            } => {
+                *counter += 1;
+                (callback)(a, *c, o, *counter, engine);
             }
         }
     }

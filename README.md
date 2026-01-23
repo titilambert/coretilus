@@ -31,8 +31,9 @@ Each binary is intentionally useless, funny, or just delightfully absurd.
 | `gti`    | `git`        | ✅ - DONE    | “Start your engine!” before committing.<br>Rust port of https://github.com/rwos/gti |
 | `pc`     | `cp`         | ✅ - DONE    | Because data deserves a grand tour of your 486 before reaching the disk |
 | `mr`     | `rm`         | ✅ - DONE    | Land the rocket without crashing it. <br> https://ascii.co.uk/art/rockets / https://ascii.co.uk/art/explosion |
-| `dog`    | `dig`        | ✅ - DONE    | A Dog chasing a domain. <br> https://www.asciiart.eu/animals/dogs |
+| `dog`    | `dig`        | ✅ - DONE    | A dog chasing a domain. <br> https://www.asciiart.eu/animals/dogs |
 | `gb`     | `bg`         | ✅ - DONE    | Playing retro video game instead of running background job |
+| `ehco`   | `echo`       | ✅ - DONE    | A parrot trying to repeat <br> https://www.asciiart.eu/search?q=parrot |
 | `grpe`   | `grep`       | 🕓 - PLANNED | Searches nothing and finds everything. |
 | ...adn   | more         | 🕓 - PLANNED | Coming soon, one typo at a time. |
 | ...yuor  | own ideas    | 🕓 - PLANNED | Open an issue or a PR. |
