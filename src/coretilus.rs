@@ -9,6 +9,7 @@ pub mod command;
 pub mod commands;
 pub mod engine_v2;
 pub mod tools;
+pub mod windows_timer;
 
 #[cfg(unix)]
 mod signal {

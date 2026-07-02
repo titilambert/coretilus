@@ -5,6 +5,7 @@ use coretilus::command::CommandV2;
 use coretilus::commands::mr::cli_v2::Mr;
 
 fn main() {
+    coretilus::windows_timer::boost_timer_resolution();
     let mut mr = Mr {
         landed: Rc::new(RefCell::new(false)),
         retry: Rc::new(RefCell::new(false)),
