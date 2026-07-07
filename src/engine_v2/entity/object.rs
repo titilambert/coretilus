@@ -92,6 +92,15 @@ impl Object {
         &self.sprites[self.active_sprite]
     }
 
+    pub fn activate_sprite(&mut self, tick_id: usize) {
+        self.sprites[self.active_sprite].set_activate(true);
+        self.sprites[self.active_sprite].reset(tick_id);
+    }
+
+    pub fn deactivate_sprite(&mut self) {
+        self.sprites[self.active_sprite].set_activate(false);
+    }
+
     // Frame
     pub fn set_frame_id(&mut self, frame_id: usize) {
         self.sprites[self.active_sprite].set_frame_id(frame_id);
@@ -125,12 +134,21 @@ impl Object {
             }
         };
 
-        let mut moved = true;
+        let mut moved_x = true;
+        let mut moved_y = true;
         if !self.coords_history.is_empty() {
-            moved = self.coords.x() != (self.coords_history[self.coords_history.len() - 1].x())
-                || (self.coords.y() != self.coords_history[self.coords_history.len() - 1].y());
+            moved_x = self.coords.x() != self.coords_history[self.coords_history.len() - 1].x();
+            moved_y = self.coords.y() != self.coords_history[self.coords_history.len() - 1].y();
         }
-        sprite.advance(tick_id, moved);
+        if sprite.is_active() {
+            sprite.advance(
+                tick_id,
+                moved_x,
+                moved_y,
+                self.movement.is_active(),
+                self.movement.is_done(),
+            );
+        }
     }
 
     // Movement

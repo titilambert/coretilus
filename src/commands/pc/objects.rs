@@ -33,33 +33,33 @@ const FRAME_DATAL5: &str = include_str!("./frames/datal5.adoc");
 pub fn get_object_motherboard() -> ObjectRef {
     //let anim = AnimationOld::new_tick_based(frames, 0, 1, 50, true);
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_MOTHERBOARD));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     //let spriteold = SpriteOld::new(50, String::from("Motherboard"), 1);
     Object::new(50, String::from("Motherboard"), vec![sprite], None)
 }
 
 pub fn get_object_chipset() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_CHIPSET));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     //let sprite = SpriteOld::new(20, String::from("Chipset"), 100);
     Object::new(20, String::from("Chipset"), vec![sprite], None)
 }
 pub fn get_object_ram() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_RAM));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     //let sprite = SpriteOld::new(20, String::from("RAM"), 100);
     Object::new(20, String::from("RAM"), vec![sprite], None)
 }
 
 pub fn get_object_cachel2() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_CACHEL2));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     //let sprite = SpriteOld::new(20, String::from("cachel2"), 100);
     Object::new(20, String::from("Cache L2"), vec![sprite], None)
 }
 pub fn get_object_cpu() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_CPU));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     //let sprite = SpriteOld::new(20, String::from("CPU"), 100);
     Object::new(20, String::from("CPU"), vec![sprite], None)
 }
@@ -149,7 +149,7 @@ pub fn get_object_data(index: usize) -> ObjectRef {
 
     let frames = frame_list[index - 1].clone();
     let anim = SpriteAnimation::new_movement_based(frames, false);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     /*let sprite = SpriteOld::new(
         14 + index as u64,
         format!("data{}", index),

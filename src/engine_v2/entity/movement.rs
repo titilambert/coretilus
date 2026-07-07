@@ -164,6 +164,10 @@ impl Movement {
         self.active = true;
     }
 
+    pub fn is_done(&self) -> bool {
+        self.is_done
+    }
+
     pub fn get_coordinate(&self, _tick_id: usize) -> Coords {
         match self.direction {
             Direction::Relative => {

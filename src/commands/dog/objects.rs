@@ -21,12 +21,12 @@ pub fn get_object_dog() -> ObjectRef {
         Frame::new(FRAME_DOG6),
     ];
     let anim = SpriteAnimation::new_movement_based(frames.clone(), true);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(9, String::from("Running dog"), vec![sprite], None)
 }
 
 pub fn get_object_domain(domain_name: String) -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(domain_name));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(9, String::from("Domain"), vec![sprite], None)
 }

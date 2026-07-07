@@ -42,7 +42,7 @@ pub fn get_object_d51() -> ObjectRef {
         Frame::new(FRAME_D51_06),
     ];
     let anim = SpriteAnimation::new_movement_based(frames.clone(), true);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
 
     Object::new(1, String::from("Steam locomotive D51"), vec![sprite], None)
 }
@@ -58,7 +58,7 @@ pub fn get_object_logo() -> ObjectRef {
     ];
 
     let anim = SpriteAnimation::new_movement_based(frames.clone(), true);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
 
     Object::new(2, String::from("Steam locomotive Logo"), vec![sprite], None)
 }
@@ -74,7 +74,7 @@ pub fn get_object_c51() -> ObjectRef {
     ];
 
     let anim = SpriteAnimation::new_movement_based(frames.clone(), true);
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(3, String::from("Steam locomotive C51"), vec![sprite], None)
 }
 
@@ -86,8 +86,8 @@ pub fn get_object_smoke() -> ObjectRef {
         Frame::new(FRAME_SMOKE_4),
     ];
 
-    let anim = SpriteAnimation::new_tick_based(frames.clone(), 20, true, None);
-    let sprite = Sprite::new(anim);
+    let anim = SpriteAnimation::new_tick_based(frames.clone(), 20, true, None, false, false);
+    let sprite = Sprite::new(anim, true);
     Object::new(4, String::from("Smoke"), vec![sprite], None)
 }
 
@@ -99,25 +99,32 @@ pub fn get_object_accident(start_frame_id: usize) -> ObjectRef {
         Frame::new(FRAME_ACCIDENT_2),
     ];
 
-    let anim = SpriteAnimation::new_tick_based(frames.clone(), 50, true, Some(start_frame_id));
-    let sprite = Sprite::new(anim);
+    let anim = SpriteAnimation::new_tick_based(
+        frames.clone(),
+        50,
+        true,
+        Some(start_frame_id),
+        false,
+        false,
+    );
+    let sprite = Sprite::new(anim, true);
     Object::new(5, String::from("Accident"), vec![sprite], None)
 }
 
 pub fn get_object_coal() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_COAL));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(6, String::from("Coal"), vec![sprite], None)
 }
 
 pub fn get_object_logo_coal() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_LOGO_COAL));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(7, String::from("Little coal"), vec![sprite], None)
 }
 
 pub fn get_object_logo_car() -> ObjectRef {
     let anim = SpriteAnimation::new_static(Frame::new(FRAME_LOGO_CAR));
-    let sprite = Sprite::new(anim);
+    let sprite = Sprite::new(anim, true);
     Object::new(8, String::from("Little car"), vec![sprite], None)
 }
