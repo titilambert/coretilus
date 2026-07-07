@@ -1,4 +1,5 @@
 pub mod dog;
+pub mod ehco;
 pub mod gb;
 pub mod gti;
 pub mod mr;

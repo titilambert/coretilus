@@ -56,3 +56,6 @@ name = "mr"
 
 [[bin]]
 name = "pc"
+
+[[bin]]
+name = "ehco"
