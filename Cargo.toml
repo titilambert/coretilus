@@ -3,6 +3,7 @@ name = "coretilus"
 version = "0.6.0"
 edition = "2024"
 authors = ["Thibault Cohen <dev@ttb.lt>"]
+# language = "Rust"
 license = "Apache-2.0"
 description = "A parody of GNU Coreutils — a playful collection of typo-triggered command-line tools written in Rust"
 repository = "https://github.com/titilambert/coretilus"
@@ -19,6 +20,7 @@ assets = [
 ]
 
 [dependencies]
+# windows dependency is optional and only added for Windows targets.
 terminal_size = "0.4.3"
 crossterm = "0.27"
 rand = "0.10.1"
@@ -59,3 +61,6 @@ name = "pc"
 
 [[bin]]
 name = "ehco"
+
+[target.'cfg(target_os="windows")'.dependencies]
+windows = { version = "0.58", features = ["Win32_Media"] }

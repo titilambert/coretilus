@@ -3,6 +3,7 @@ use coretilus::command::CommandV2;
 use coretilus::commands::gti::cli_v2::Gti;
 
 fn main() {
+    coretilus::windows_timer::boost_timer_resolution();
     let mut gti = Gti {};
     gti.run();
 }
