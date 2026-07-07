@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -130,7 +130,7 @@ jobs:
           echo "Created artifact: artifacts/$ARCHIVE_NAME"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.target }}
           path: artifacts/
@@ -144,12 +144,12 @@ jobs:
 
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: artifacts/
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: artifacts/**/*
         env:
@@ -167,7 +167,7 @@ jobs:
       url: https://crates.io/crates/coretilus
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - uses: rust-lang/crates-io-auth-action@v1
@@ -237,7 +237,7 @@ jobs:
           echo "binaries=${BINS_ARM64}" >> $GITHUB_OUTPUT
 
       - name: Checkout tap repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: titilambert/homebrew-tap
           ssh-key: ${{ secrets.TAP_DEPLOY_KEY }}
