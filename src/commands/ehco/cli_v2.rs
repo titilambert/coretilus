@@ -13,7 +13,7 @@ use crate::engine_v2::entity::object::ObjectRef;
 use crate::engine_v2::position::Position;
 use crate::engine_v2::position::XTermPosition;
 use crate::engine_v2::position::YTermPosition;
-use rand::Rng;
+use rand::RngExt;
 
 pub struct Ehco {}
 

@@ -23,7 +23,7 @@ use crate::engine_v2::position::YTermPosition;
 use crate::tools::get_terminal_size;
 use crate::tools::parse_args;
 use crossterm::event::KeyCode;
-use rand::Rng;
+use rand::RngExt;
 
 pub struct Mr {
     pub landed: Rc<RefCell<bool>>,

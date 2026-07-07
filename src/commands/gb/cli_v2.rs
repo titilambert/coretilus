@@ -35,7 +35,8 @@ impl CommandV2 for Gb {
         );
         gb_object.borrow_mut().set_movement(movement);
 
-        let raw_shapes = [
+        type ShapeSpec = (fn(usize, usize) -> ObjectRef, i32, i32, i32, i32, i32);
+        let raw_shapes: [ShapeSpec; 8] = [
             (get_object_shape, 7, 17, 22, speed, speed / 2),
             (get_object_shape, 3, 16, 24, speed, speed / 2),
             (get_object_shape, 7, 20, 22, speed, speed / 2),
@@ -46,7 +47,11 @@ impl CommandV2 for Gb {
             (get_object_shape, 8, 30, 23, speed, speed / 2),
         ];
         for (index, (object_fun, id, x, y, speed, sprite_speed)) in raw_shapes.iter().enumerate() {
-            let object_shape = object_fun(*id, *sprite_speed as usize).clone();
+            let object_shape = object_fun(
+                (*id).try_into().unwrap(),
+                (*sprite_speed).try_into().unwrap(),
+            )
+            .clone();
             if index == 0 {
                 object_shape.borrow_mut().activate_sprite(0);
             }
