@@ -5,16 +5,10 @@
     html_logo_url = "https://gitlab.com/ttblt-oss/coretilus/coretilus/-/raw/main/coretilus.png?ref_type=heads&inline=false"
 )]
 
-pub mod animation;
-pub mod collision;
 pub mod command;
 pub mod commands;
-pub mod coord;
-pub mod engine;
-pub mod frame;
-pub mod sprite;
+pub mod engine_v2;
 pub mod tools;
-pub mod trajectory;
 
 #[cfg(unix)]
 mod signal {

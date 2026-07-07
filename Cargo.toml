@@ -44,3 +44,12 @@ name = "gti"
 
 [[bin]]
 name = "sl"
+
+[[bin]]
+name = "dog"
+
+[[bin]]
+name = "mr"
+
+[[bin]]
+name = "pc"
