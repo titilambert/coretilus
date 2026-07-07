@@ -23,16 +23,37 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
+      - name: Cache dev tool binaries (cargo-llvm-cov, cargo-audit, cargo-udeps)
+        id: cache-cargo-bin
+        uses: actions/cache@v6
+        with:
+          path: ~/.cargo/bin
+          key: ${{ runner.os }}-cargo-bin-llvm-cov-0.6.21-audit-0.22.2-udeps-0.1.61
+
+      - name: Update stable toolchain
+        if: steps.cache-cargo-bin.outputs.cache-hit != 'true'
+        run: rustup update stable
       - name: Install cargo-llvm-cov
-        run: cargo install cargo-llvm-cov --version 0.6.21
+        if: steps.cache-cargo-bin.outputs.cache-hit != 'true'
+        run: cargo install cargo-llvm-cov --version 0.6.21 --locked
       - name: Install cargo-audit
-        run: cargo install cargo-audit
-      - name: Install rustfmt and clippy
-        run: rustup component add --toolchain nightly-2025-10-12-x86_64-unknown-linux-gnu rustfmt clippy
+        if: steps.cache-cargo-bin.outputs.cache-hit != 'true'
+        run: cargo install cargo-audit --version 0.22.2 --locked
+      - name: Install cargo-udeps
+        if: steps.cache-cargo-bin.outputs.cache-hit != 'true'
+        # cargo-udeps' cargo dependency requires a newer rustc than the
+        # nightly pinned in rust-toolchain.toml, so build it with stable.
+        run: cargo +stable install cargo-udeps --version 0.1.61 --locked
+      - name: Install pinned nightly toolchain and components
+        # Install rustfmt, clippy and llvm-tools-preview (required by
+        # rust-toolchain.toml) in a single rustup invocation. prek runs
+        # pre-commit hooks in parallel, and if this toolchain/components
+        # aren't fully installed beforehand, multiple hooks trigger
+        # concurrent rustup component downloads, which can race on
+        # ~/.rustup/downloads and fail with "No such file or directory".
+        run: rustup component add --toolchain nightly-2025-10-12-x86_64-unknown-linux-gnu rustfmt clippy llvm-tools-preview
       - name: pre-commit
         uses: j178/prek-action@v1
-      - name: Install cargo-llvm-cov
-        run: cargo install cargo-llvm-cov
       - name: Test Build
         env:
           RUSTFLAGS: "-C target-feature=+crt-static"

@@ -35,8 +35,6 @@ repos:
         language: system
         types: [rust]
         pass_filenames: false
-        environment:
-          TERM: dumb
 
       - id: cargo-doc
         name: Check documentation
@@ -57,11 +55,12 @@ repos:
       - id: cargo-udeps
         name: unused dependencies
         entry: bash -c '
-          if rustup toolchain list | grep -q nightly; then
-          echo "🔍 Check unused dependencies with nightly..."
-          cargo +nightly udeps --all-targets;
+          nightly_toolchain=$(command -v rustup &> /dev/null && rustup toolchain list | grep nightly | head -n1 | awk "{print \$1}");
+          if command -v cargo-udeps &> /dev/null && [ -n "$nightly_toolchain" ]; then
+          echo "🔍 Check unused dependencies with $nightly_toolchain...";
+          cargo "+$nightly_toolchain" udeps --all-targets;
           else
-          echo "⚠️  Toolchain nightly not installed, skip cargo-udeps";
+          echo "⚠️  cargo-udeps and/or a nightly toolchain (via rustup) are not available, skip unused dependencies check";
           fi '
         language: system
         types: [rust]
@@ -83,7 +82,7 @@ repos:
         pass_filenames: false
 
 default_install_hook_types: [pre-commit, pre-push]
-default_stages: [commit]
+default_stages: [pre-commit]
 
 exclude: |
   (?x)^(

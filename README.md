@@ -99,6 +99,41 @@ brew tap titilambert/tap
 brew install coretilus
 ```
 
+## 🛠️ Development tools
+
+Everything below can be set up with only [`rustup`](https://rustup.rs/)
+installed (no other package required). These tools are **development-only**
+(not project dependencies, nothing to add to `Cargo.toml`) and are used by
+the `pre-commit` hooks and CI.
+
+```bash
+# 1. Stable toolchain + formatting/linting components
+rustup component add rustfmt clippy
+
+# 2. Nightly toolchain (required by cargo-udeps to detect unused dependencies)
+rustup toolchain install nightly
+
+# 3. Coverage report
+cargo install cargo-llvm-cov --locked
+# If cargo-llvm-cov can't find llvm-cov/llvm-profdata, pointing it to your
+# LLVM toolchain may be necessary:
+export LLVM_COV=$(which llvm-cov)
+export LLVM_PROFDATA=$(which llvm-profdata)
+
+# 4. Security audit
+cargo install cargo-audit --locked
+
+# 5. Detect unused dependencies (runs against the nightly toolchain from step 2)
+cargo install cargo-udeps --locked
+
+# 6. Git hooks runner (Rust-native pre-commit alternative, no Python needed)
+cargo install prek --locked
+prek install
+```
+
+If a tool or the nightly toolchain is missing, the corresponding pre-commit
+hook is skipped with a warning instead of failing the commit.
+
 ## ⚙️ Build
 
 ```bash
